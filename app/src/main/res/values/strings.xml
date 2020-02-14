@@ -1,0 +1,41 @@
+<resources>
+
+    <!-- Header -->
+    <string name="app_name">3DFC</string>
+
+    <!-- TextViews -->
+    <string name="textview"> </string>
+    <string name="animal_name">Animal name</string>
+
+
+    <!-- Buttons -->
+    <string name="voice_button">&#x1F399;</string>
+    <string name="speak_button">&#x1F50A;</string>
+
+    <!-- Navigation -->
+    <string name="previous">tour</string>
+    <string name="home">home</string>
+    <string name="next">settings</string>
+
+    <!-- Menu items -->
+    <string name="first_menu">Turn background black</string>
+    <string name="second_menu">Turn background blue</string>
+    <string name="third_menu">Turn background green</string>
+    <string name="menu_text">Click the dots</string>
+
+    <!-- Descriptions -->
+    <string name="desc1">description</string>
+    <string name="desc2">description</string>
+    <string name="desc3">description</string>
+    <string name="desc4">description</string>
+    <string name="desc5">description</string>
+    <string name="desc6">description</string>
+    <string name="desc7">description</string>
+    <string name="desc8">description</string>
+    <string name="desc9">description</string>
+    <string name="desc10">description</string>
+    <string name="desc11">description</string>
+    <string name="desc12">description</string>
+
+
+</resources>
