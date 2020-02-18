@@ -56,18 +56,18 @@
     file: 'sampledata/models/cat.fbx',
     name: 'cat',
     recenter: 'root',
-    scale: 100.0,
+    scale: 7.6481950000000003,
   },
   samplers: [
     {
-      file: 'sampledata/models\\cat.fbm\\5.png',
+      file: 'sampledata/models/cat.fbm/5.png',
       name: '5',
-      pipeline_name: 'cat.fbm\\5.png',
+      pipeline_name: 'cat.fbm/5.png',
     },
     {
-      file: 'sampledata/models\\cat.fbm\\7.png',
+      file: 'sampledata/models/cat.fbm/7.png',
       name: '7',
-      pipeline_name: 'cat.fbm\\7.png',
+      pipeline_name: 'cat.fbm/7.png',
     },
   ],
   version: '0.54:2',

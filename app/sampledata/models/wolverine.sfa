@@ -60,14 +60,14 @@
   },
   samplers: [
     {
-      file: 'sampledata/models\\wolverine.fbm\\5.png',
+      file: 'sampledata/models/wolverine.fbm/5.png',
       name: '5',
-      pipeline_name: 'wolverine.fbm\\5.png',
+      pipeline_name: 'wolverine.fbm/5.png',
     },
     {
-      file: 'sampledata/models\\wolverine.fbm\\7.png',
+      file: 'sampledata/models/wolverine.fbm/7.png',
       name: '7',
-      pipeline_name: 'wolverine.fbm\\7.png',
+      pipeline_name: 'wolverine.fbm/7.png',
     },
   ],
   version: '0.54:2',

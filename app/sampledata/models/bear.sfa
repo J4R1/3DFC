@@ -56,18 +56,18 @@
     file: 'sampledata/models/bear.fbx',
     name: 'bear',
     recenter: 'root',
-    scale: 40.0,
+    scale: 6.4932540000000003,
   },
   samplers: [
     {
-      file: 'sampledata/models\\bear.fbm\\5.png',
+      file: 'sampledata/models/bear.fbm/5.png',
       name: '5',
-      pipeline_name: 'bear.fbm\\5.png',
+      pipeline_name: 'bear.fbm/5.png',
     },
     {
-      file: 'sampledata/models\\bear.fbm\\7.png',
+      file: 'sampledata/models/bear.fbm/7.png',
       name: '7',
-      pipeline_name: 'bear.fbm\\7.png',
+      pipeline_name: 'bear.fbm/7.png',
     },
   ],
   version: '0.54:2',

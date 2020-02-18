@@ -55,17 +55,15 @@ sceneform.asset('sampledata/models/cat.fbx',
         'sampledata/models/cat.sfa',
         'src/main/res/raw/cat')
 
-
+sceneform.asset('sampledata/models/cow.fbx',
+        'default',
+        'sampledata/models/cow.sfa',
+        'src/main/res/raw/cow')
 
 sceneform.asset('sampledata/models/dog.fbx',
         'default',
         'sampledata/models/dog.sfa',
         'src/main/res/raw/dog')
-
-sceneform.asset('sampledata/models/cow.fbx',
-        'default',
-        'sampledata/models/cow.sfa',
-        'src/main/res/raw/cow')
 
 sceneform.asset('sampledata/models/elephant.fbx',
         'default',

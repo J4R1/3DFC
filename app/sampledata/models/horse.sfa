@@ -98,24 +98,24 @@
   },
   samplers: [
     {
-      file: 'sampledata/models\\horse.fbm\\5.png',
-      name: '5',
-      pipeline_name: 'horse.fbm\\5.png',
-    },
-    {
-      file: 'sampledata/models\\horse.fbm\\7.png',
-      name: '7',
-      pipeline_name: 'horse.fbm\\7.png',
-    },
-    {
-      file: 'sampledata/models\\horse.fbm\\8.png',
+      file: 'sampledata/models/horse.fbm/8.png',
       name: '8',
-      pipeline_name: 'horse.fbm\\8.png',
+      pipeline_name: 'horse.fbm/8.png',
     },
     {
-      file: 'sampledata/models\\horse.fbm\\9.png',
+      file: 'sampledata/models/horse.fbm/9.png',
       name: '9',
-      pipeline_name: 'horse.fbm\\9.png',
+      pipeline_name: 'horse.fbm/9.png',
+    },
+    {
+      file: 'sampledata/models/horse.fbm/5.png',
+      name: '5',
+      pipeline_name: 'horse.fbm/5.png',
+    },
+    {
+      file: 'sampledata/models/horse.fbm/7.png',
+      name: '7',
+      pipeline_name: 'horse.fbm/7.png',
     },
   ],
   version: '0.54:2',
