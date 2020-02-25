@@ -74,20 +74,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     }
     var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
-        // TODO: Crashes the application
-        // Test function
         tts = TextToSpeech(this, this)
         fun speakOut() {
-            val text = "Holla holla get dolla!"
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-        }
-        voice_button.setOnClickListener{
             val text = "Holla holla get dolla!"
             tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
         }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
 
         arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
 
@@ -138,15 +133,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
         //End of sensors--
 
-        //Speech to text command
-//        voice_button.setOnClickListener {
-//            SpeechFunction()
-//        }
-
         //Text to speech button
         speak_button.setOnClickListener {
             // TextToSpeechFunction()
             Toast.makeText(applicationContext, "Press the button below and name a color.\nFor example: 'RED'", Toast.LENGTH_LONG).show()
+        }
+
+        voice_button.setOnClickListener{
+            val text = "Holla holla get dolla!"
+            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
         }
     }
 
