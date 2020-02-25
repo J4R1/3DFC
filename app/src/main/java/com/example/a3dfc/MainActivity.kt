@@ -10,13 +10,11 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.ConnectivityManager
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.speech.RecognizerIntent
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import com.google.ar.sceneform.AnchorNode
@@ -27,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
-import kotlinx.android.synthetic.main.name_animal.*
 import java.lang.Exception
 import java.net.URL
 import java.util.*
@@ -52,6 +49,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private lateinit var wolverineRendereable: ModelRenderable
 
     private lateinit var animalName: ViewRenderable
+    private lateinit var animalName2: ViewRenderable
+
 
     ///* Sensors ------------
     private lateinit var sensorManager: SensorManager
@@ -65,8 +64,30 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         Handler(Looper.getMainLooper()) {
         override fun handleMessage(inputMessage: Message) {
             if (inputMessage.what == 0) {
-                val msg = inputMessage.obj.toString().take(30)
+                val msg = inputMessage.obj.toString() //.take(30)
+                //textviewfetch.text = msg //inputMessage.obj.toString()
+                GlobalModel.testi = msg
+            } else if (inputMessage.what == 1) {
+                val msg = inputMessage.obj.toString() //.take(30)
+                GlobalModel.testi2 = msg
                 textviewfetch.text = msg //inputMessage.obj.toString()
+            }
+
+            //Setup AR
+            arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
+
+            setArrayView()
+            setClickListener()
+            setupModel()
+
+            arFragment?.setOnTapArPlaneListener { hitResult, _, _ ->
+
+                val anchor = hitResult.createAnchor()
+                val anchorNode = AnchorNode(anchor)
+                anchorNode.setParent(arFragment?.arSceneView?.scene)
+
+                createModel(anchorNode, selected)
+
             }
         }
     }
@@ -74,7 +95,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        //Check internet connection
+        if (isNetworkAvailable()) {
+            val myRunnable = Conn(mHandler)
+            val myThread = Thread(myRunnable)
+            myThread.start()
+        }
+        /*
         arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
 
         setArrayView()
@@ -89,14 +116,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
             createModel(anchorNode, selected)
 
-        }
+        }*/
 
-        //Check internet connection
-        if (isNetworkAvailable()) {
-            val myRunnable = Conn(mHandler)
-            val myThread = Thread(myRunnable)
-            myThread.start()
-        }
 
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -349,9 +370,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 null
             }
 
+        val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
+        val view = inflater.inflate(R.layout.name_animal, root_layout, false)
+        val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
+        textView.text = GlobalModel.testi
 
         ViewRenderable.builder()
-            .setView(this, R.layout.name_animal)
+            .setView(this, view)
             .build()
             .thenAccept { renderable -> animalName = renderable }
 
@@ -366,7 +391,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             1 -> {
                 renderableNode.renderable = bearRendereable
                 renderableNode.select()
-                //testi(anchorNode, renderableNode, "Bear")
 
                 val nameView = TransformableNode(arFragment?.transformationSystem)
                 nameView.localPosition = Vector3(0f, renderableNode.localPosition.y + 0.5f, 0f)
@@ -474,21 +498,111 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 // End of MainAvtivity
 
 object GlobalModel {
-    var speechText = ""
+    var position = 0 // for wiki texts
+    var speechText = "" // for speech to text placeholder
+    var testi = ""
+    var testi2 = ""
 }
 
 class Conn(mHand: Handler?) : Runnable {
     val myHandler = mHand
     override fun run() {
         try {
-            val res = URL("https://developer.android.com/").readText()
+            val res = URL("https://users.metropolia.fi/~jaripie/karhu").readText()
             Log.d("res", res)
             val msg = myHandler?.obtainMessage()
             msg?.what = 0
             msg?.obj = res
             myHandler?.sendMessage(msg)
+
+            val res2 = URL("https://users.metropolia.fi/~jaripie/cat").readText()
+            Log.d("res", res)
+            val msg2 = myHandler?.obtainMessage()
+            msg2?.what = 1
+            msg2?.obj = res2
+            myHandler?.sendMessage(msg2)
+
         } catch (e: Exception) {
             Log.d("Error", e.toString())
         }
     }
 }
+
+
+/*
+http://users.metropolia.fi/~jaripie/karhu
+http://users.metropolia.fi/~jaripie/cat
+http://users.metropolia.fi/~jaripie/cow
+http://users.metropolia.fi/~jaripie/dog
+http://users.metropolia.fi/~jaripie/elephant
+http://users.metropolia.fi/~jaripie/reindeer
+http://users.metropolia.fi/~jaripie/wolverine
+http://users.metropolia.fi/~jaripie/lion
+
+class ExampleClass {
+    companion object{
+        fun writeText(textValue:String,mainActivity:MainActivity) {
+            mainActivity.testMessage.text = textValue
+        }
+    }
+}
+
+                //addName(anchorNode, renderableNode, "Wolverine")
+
+               // val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
+                //val view = inflater.inflate(R.layout.name_animal, root_layout, true)
+                //val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
+                //textView.visibility = View.INVISIBLE
+                //textView.text = GlobalModel.testi
+                //textView.setTextColor(Color.RED)
+                //textView.visibility = View.INVISIBLE
+
+
+        //textView.visibility = View.INVISIBLE
+        //setContentView(R.layout.name_animal)
+        //nameAnimal.text = GlobalModel.testi
+
+
+        /*val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
+        val view = inflater.inflate(R.layout.name_animal, root_layout, true)
+        val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
+        textView.text = GlobalModel.testi
+        textView.setTextColor(Color.RED)
+
+             setContentView(R.layout.name_animal)
+        val ss = findViewById(R.id.nameAnimal) as TextView
+        ss.setTextColor(Color.GREEN)
+        ss.text = "sss"
+        Log.d("AAAA", "${ss.text}")
+
+
+
+        // Get the LayoutInflater from Context
+        val layoutInflater:LayoutInflater = LayoutInflater.from(applicationContext)
+
+
+        // Inflate the layout using LayoutInflater
+        val view: View = layoutInflater.inflate(
+            R.layout.name_animal, // Custom view/ layout
+            root_layout, // Root layout to attach the view
+            false // Attach with root layout or not
+        )
+        // Find the text view from custom layout
+        val label = view.findViewById<TextView>(R.id.planetInfoCard)
+
+        // Set the text of custom view's text view widget
+        label.text = "Cute Flower."
+
+        // Finally, add the view/custom layout to the activity root layout
+        root_layout.addView(view,0)
+*/
+
+
+        textView.text = GlobalModel.testi2
+
+        ViewRenderable.builder()
+            .setView(this, view)
+            .build()
+            .thenAccept { renderable -> animalName2 = renderable }
+
+ */
