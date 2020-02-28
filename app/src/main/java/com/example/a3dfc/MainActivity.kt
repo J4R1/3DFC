@@ -13,6 +13,7 @@ import android.net.ConnectivityManager
 import android.os.*
 import androidx.appcompat.app.AppCompatActivity
 import android.speech.RecognizerIntent
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +26,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
+import kotlinx.android.synthetic.main.name_animal.*
+import org.w3c.dom.Text
 import java.lang.Exception
 import java.net.URL
 import java.util.*
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
+class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener {
 
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
@@ -92,8 +95,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             }
         }
     }
-
+    var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        tts = TextToSpeech(this, this)
+        fun speakOut() {
+            val text = "Holla holla get dolla!"
+            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //Check internet connection
@@ -146,18 +155,25 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
         //End of sensors--
 
-        //Speeh to text command
-        circle_button.setOnClickListener {
-            SpeechFunction()
-        }
-
         //Text to speech button
         speak_button.setOnClickListener {
             // TextToSpeechFunction()
             Toast.makeText(applicationContext, "Press the button below and name a color.\nFor example: 'RED'", Toast.LENGTH_LONG).show()
         }
+
+        voice_button.setOnClickListener{
+            val text = "Holla holla get dolla!"
+            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+        }
     }
 
+    override fun onDestroy() {
+        if (tts != null) {
+            tts!!.stop()
+            tts!!.shutdown()
+        }
+        super.onDestroy()
+    }
     override fun onSensorChanged(p0: SensorEvent?) {
         Log.v("----onSensorChanged----","p0!!.values[0]")
         //Sensor change value
@@ -497,6 +513,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                     R.id.reindeer ->        selected = 11
                     R.id.wolverine ->       selected = 12
                 }
+                Log.d("asdf", "My animal is: $selected")
             }
         }
     }
@@ -508,6 +525,20 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             } else {
                 view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
             }
+        }
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            val result = tts!!.setLanguage(Locale.US)
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.d("asdf", "Lang error")
+            } else {
+                voice_button.isEnabled = true
+            }
+        } else {
+            Log.d("asdf", "Text to Speech init fail")
         }
     }
 }
