@@ -67,10 +67,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
                 val msg = inputMessage.obj.toString() //.take(30)
                 //textviewfetch.text = msg //inputMessage.obj.toString()
                 GlobalModel.testi = msg
-            } else if (inputMessage.what == 1) {
+            }
+            if (inputMessage.what == 1) {
                 val msg = inputMessage.obj.toString() //.take(30)
                 GlobalModel.testi2 = msg
-                textviewfetch.text = msg //inputMessage.obj.toString()
+                textviewfetch.text = "dddd" //inputMessage.obj.toString()
             }
 
             //Setup AR
@@ -380,6 +381,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             .build()
             .thenAccept { renderable -> animalName = renderable }
 
+        val inflater2:LayoutInflater = LayoutInflater.from(applicationContext)
+        val view2 = inflater2.inflate(R.layout.name_animal2, root_layout, false)
+        val textView2 : TextView = view2?.findViewById(R.id.nameAnimal2) as TextView
+        textView2.text = GlobalModel.testi2
+
+        ViewRenderable.builder()
+            .setView(this, view2)
+            .build()
+            .thenAccept { renderable -> animalName2 = renderable }
+
 
 
     }
@@ -401,6 +412,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             2 ->{
                 renderableNode.renderable = catRendereable
                 renderableNode.select()
+                val nameView = TransformableNode(arFragment?.transformationSystem)
+                nameView.localPosition = Vector3(0f, renderableNode.localPosition.y + 0.5f, 0f)
+                nameView.setParent(anchorNode)
+                nameView.renderable = animalName2
+                nameView.select()
             }
             3 ->{
                 renderableNode.renderable = dogRendereable
