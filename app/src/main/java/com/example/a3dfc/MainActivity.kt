@@ -162,8 +162,20 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
 
         voice_button.setOnClickListener{
-            val text = "Holla holla get dolla!"
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+
+            if (selected == 1) {
+                val text = GlobalModel.testi
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 2) {
+                val text = GlobalModel.testi2
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else {
+                val text = "Place a animal model"
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+
+            }
+            //val text = "Holla holla get dolla!"
+            //tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
         }
     }
 
