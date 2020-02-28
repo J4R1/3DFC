@@ -533,9 +533,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private fun setBackground(id: Int) {
         for (view in arrayView!!) {
             if (view.id == id) {
-                view.setBackgroundColor(android.graphics.Color.parseColor("#80333639"))
+                view.setBackgroundResource(R.drawable.animal_button)
             } else {
-                view.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+                view.setBackgroundColor(Color.TRANSPARENT)
             }
         }
     }
