@@ -12,6 +12,8 @@
     <string name="voice_button">&#x1F399;</string>
     <string name="speak_button">&#x1F50A;</string>
     <string name="flashlight_button">&#x1F526;</string>
+    <string name="right">&#8618;</string>
+    <string name="left">&#x21A9;</string>
 
     <!-- Navigation -->
     <string name="previous">tour</string>
