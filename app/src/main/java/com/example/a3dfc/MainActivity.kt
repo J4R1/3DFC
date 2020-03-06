@@ -1,8 +1,10 @@
 package com.example.a3dfc
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.hardware.Sensor
@@ -113,10 +115,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         tts = TextToSpeech(this, this)
-        fun speakOut() {
-            val text = "Holla holla get dolla!"
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-        }
+//        fun speakOut() {
+//            val text = "Holla holla get dolla!"
+//            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+//        }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -128,6 +130,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         } else {
             Toast.makeText(applicationContext, "This app requires INTERNET, please try again", Toast.LENGTH_LONG).show()
         }
+
+
+        // DialogBox Intro --
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setCancelable(false)
+        dialogBuilder.setMessage(R.string.intro).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
+
 
         speak_button.isVisible = false
         speak_button.isClickable = false
