@@ -1,8 +1,10 @@
 package com.example.a3dfc
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.hardware.Sensor
@@ -98,10 +100,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         tts = TextToSpeech(this, this)
-        fun speakOut() {
-            val text = "Holla holla get dolla!"
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-        }
+//        fun speakOut() {
+//            val text = "Holla holla get dolla!"
+//            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+//        }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -111,23 +113,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             val myThread = Thread(myRunnable)
             myThread.start()
         }
-        /*
-        arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
 
-        setArrayView()
-        setClickListener()
-        setupModel()
-
-        arFragment?.setOnTapArPlaneListener { hitResult, _, _ ->
-
-            val anchor = hitResult.createAnchor()
-            val anchorNode = AnchorNode(anchor)
-            anchorNode.setParent(arFragment?.arSceneView?.scene)
-
-            createModel(anchorNode, selected)
-
-        }*/
-
+        // DialogBox Intro --
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setCancelable(false)
+        dialogBuilder.setMessage(R.string.intro).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
 
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager

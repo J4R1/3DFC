@@ -38,5 +38,7 @@
     <string name="desc11">description</string>
     <string name="desc12">description</string>
 
-
+    <!-- Intro text -->
+    <string name="intro">Welcome to 3D Fauna Center!\n\nIn this virtual museum you can view different animals in their actual sizes and read short information packets on them.\n\nTo start, slowly wave your phone over a flat surface until a matrix of white dots appear, then just select any of the available animals to start learning.</string>
+    <string name="intro_ok">I understand!</string>
 </resources>
