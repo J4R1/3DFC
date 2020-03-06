@@ -12,6 +12,8 @@
     <string name="voice_button">&#x1F399;</string>
     <string name="speak_button">&#x1F50A;</string>
     <string name="flashlight_button">&#x1F526;</string>
+    <string name="right">&#8618;</string>
+    <string name="left">&#x21A9;</string>
 
     <!-- Navigation -->
     <string name="previous">tour</string>
@@ -38,5 +40,7 @@
     <string name="desc11">description</string>
     <string name="desc12">description</string>
 
-
+    <!-- Intro text -->
+    <string name="intro">Welcome to 3D Fauna Center!\n\nIn this virtual museum you can view different animals in their actual sizes and read short information packets on them.\n\nTo start, slowly wave your phone over a flat surface until a matrix of white dots appear, then just select any of the available animals to start learning.</string>
+    <string name="intro_ok">I understand!</string>
 </resources>

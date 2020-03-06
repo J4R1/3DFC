@@ -1,8 +1,10 @@
 package com.example.a3dfc
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.hardware.Sensor
@@ -24,10 +26,10 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
+import androidx.core.view.isVisible
+import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
-import kotlinx.android.synthetic.main.name_animal.*
-import org.w3c.dom.Text
 import java.lang.Exception
 import java.net.URL
 import java.util.*
@@ -36,12 +38,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
-    private var selected: Int = 1 //Default value
+    var selected: Int = 0 //Default value
 
     private lateinit var bearRendereable: ModelRenderable
     private lateinit var catRendereable: ModelRenderable
-    private lateinit var dogRendereable: ModelRenderable
     private lateinit var cowRendereable: ModelRenderable
+    private lateinit var dogRendereable: ModelRenderable
     private lateinit var elephantRendereable: ModelRenderable
     private lateinit var ferretRendereable: ModelRenderable
     private lateinit var hippopotamusRendereable: ModelRenderable
@@ -50,9 +52,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private lateinit var lionRendereable: ModelRenderable
     private lateinit var reindeerRendereable: ModelRenderable
     private lateinit var wolverineRendereable: ModelRenderable
-
     private lateinit var animalName: ViewRenderable
     private lateinit var animalName2: ViewRenderable
+    private lateinit var animalName3: ViewRenderable
+    private lateinit var animalName4: ViewRenderable
 
 
     ///* Sensors ------------
@@ -69,12 +72,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             if (inputMessage.what == 0) {
                 val msg = inputMessage.obj.toString() //.take(30)
                 //textviewfetch.text = msg //inputMessage.obj.toString()
-                GlobalModel.testi = msg
+                GlobalModel.bear_txt = msg
+            } else {
+                GlobalModel.cow_txt = "Network error"
             }
             if (inputMessage.what == 1) {
                 val msg = inputMessage.obj.toString() //.take(30)
-                GlobalModel.testi2 = msg
-                textviewfetch.text = "dddd" //inputMessage.obj.toString()
+                GlobalModel.cat_txt = msg
+            } else {
+                GlobalModel.cat_txt = "Network error"
+            }
+            if (inputMessage.what == 2) {
+                val msg = inputMessage.obj.toString() //.take(30)
+                GlobalModel.cow_txt = msg
+            } else {
+                GlobalModel.cow_txt = "Network error"
+            }
+            if (inputMessage.what == 3) {
+                val msg = inputMessage.obj.toString() //.take(30)
+                GlobalModel.dog_txt = msg
+            } else {
+                GlobalModel.dog_txt = "Network error"
             }
 
             //Setup AR
@@ -91,17 +109,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 anchorNode.setParent(arFragment?.arSceneView?.scene)
 
                 createModel(anchorNode, selected)
-
             }
         }
     }
     var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         tts = TextToSpeech(this, this)
-        fun speakOut() {
-            val text = "Holla holla get dolla!"
-            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-        }
+//        fun speakOut() {
+//            val text = "Holla holla get dolla!"
+//            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+//        }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -110,25 +127,19 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             val myRunnable = Conn(mHandler)
             val myThread = Thread(myRunnable)
             myThread.start()
+        } else {
+            Toast.makeText(applicationContext, "This app requires INTERNET, please try again", Toast.LENGTH_LONG).show()
         }
-        /*
-        arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
-
-        setArrayView()
-        setClickListener()
-        setupModel()
-
-        arFragment?.setOnTapArPlaneListener { hitResult, _, _ ->
-
-            val anchor = hitResult.createAnchor()
-            val anchorNode = AnchorNode(anchor)
-            anchorNode.setParent(arFragment?.arSceneView?.scene)
-
-            createModel(anchorNode, selected)
-
-        }*/
 
 
+        // DialogBox Intro --
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setCancelable(false)
+        dialogBuilder.setMessage(R.string.intro).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
+
+
+        speak_button.isVisible = false
+        speak_button.isClickable = false
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -155,28 +166,64 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
         //End of sensors--
 
-        //Text to speech button
-        speak_button.setOnClickListener {
-            // TextToSpeechFunction()
-            Toast.makeText(applicationContext, "Press the button below and name a color.\nFor example: 'RED'", Toast.LENGTH_LONG).show()
-        }
-
         voice_button.setOnClickListener{
 
             if (selected == 1) {
-                val text = GlobalModel.testi
+                val text = GlobalModel.bear_txt
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
             } else if (selected == 2) {
-                val text = GlobalModel.testi2
+                val text = GlobalModel.cat_txt
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
             } else {
                 val text = "Place a animal model"
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
 
             }
-            //val text = "Holla holla get dolla!"
-            //tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
         }
+        setButtonsInvisible()
+    }
+
+    fun setButtonsInvisible(){
+        right_button.isClickable = false
+        right_button.isVisible = false
+        left_button.isClickable = false
+        left_button.isVisible = false
+
+        bear.isVisible = false
+        bear.isClickable = false
+
+        cat.isVisible = false
+        cat.isClickable = false
+
+        cow.isVisible = false
+        cow.isClickable = false
+
+        dog.isVisible = false
+        dog.isClickable = false
+
+        elephant.isVisible = false
+        elephant.isClickable = false
+
+        ferret.isVisible = false
+        ferret.isClickable = false
+
+        hippopotamus.isVisible = false
+        hippopotamus.isClickable = false
+
+        horse.isVisible = false
+        horse.isClickable = false
+
+        koala_bear.isVisible = false
+        koala_bear.isClickable = false
+
+        lion.isVisible = false
+        lion.isClickable = false
+
+        reindeer.isVisible = false
+        reindeer.isClickable = false
+
+        wolverine.isVisible = false
+        wolverine.isClickable = false
     }
 
     override fun onDestroy() {
@@ -187,6 +234,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         super.onDestroy()
     }
     override fun onSensorChanged(p0: SensorEvent?) {
+        /*
         Log.v("----onSensorChanged----","p0!!.values[0]")
         //Sensor change value
         val data = p0!!.values[0]
@@ -220,6 +268,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             Log.v("-----FAILURE-----","No sensor data")
             Toast.makeText(this, "#####FAIL #####", Toast.LENGTH_SHORT).show()
         }
+        */
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -402,7 +451,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
         val view = inflater.inflate(R.layout.name_animal, root_layout, false)
         val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
-        textView.text = GlobalModel.testi
+        textView.text = GlobalModel.bear_txt
 
         ViewRenderable.builder()
             .setView(this, view)
@@ -412,47 +461,192 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         val inflater2:LayoutInflater = LayoutInflater.from(applicationContext)
         val view2 = inflater2.inflate(R.layout.name_animal2, root_layout, false)
         val textView2 : TextView = view2?.findViewById(R.id.nameAnimal2) as TextView
-        textView2.text = GlobalModel.testi2
+        textView2.text = GlobalModel.cat_txt
 
         ViewRenderable.builder()
             .setView(this, view2)
             .build()
             .thenAccept { renderable -> animalName2 = renderable }
 
+        val inflater3:LayoutInflater = LayoutInflater.from(applicationContext)
+        val view3 = inflater3.inflate(R.layout.name_animal3, root_layout, false)
+        val textView3 : TextView = view3?.findViewById(R.id.nameAnimal3) as TextView
+        textView3.text = GlobalModel.cow_txt
+
+        ViewRenderable.builder()
+            .setView(this, view3)
+            .build()
+            .thenAccept { renderable -> animalName3 = renderable }
+
+        val inflater4:LayoutInflater = LayoutInflater.from(applicationContext)
+        val view4 = inflater4.inflate(R.layout.name_animal4, root_layout, false)
+        val textView4 : TextView = view4?.findViewById(R.id.nameAnimal4) as TextView
+        textView4.text = GlobalModel.dog_txt
+
+        ViewRenderable.builder()
+            .setView(this, view4)
+            .build()
+            .thenAccept { renderable -> animalName4 = renderable }
+
 
 
     }
 
+    fun node(node:TransformableNode,  value: Float) {
+        node.apply {
+                localRotation = Quaternion.axisAngle(
+                    Vector3(0.0f, 1.0f, 0.0f),
+                    180f + value
+                )
+        }
+        GlobalModel.bear_rotation = GlobalModel.bear_rotation + 20
+    }
+
+    fun rotateLeft(node:TransformableNode, value: Float, animal: Int) {
+        node.apply {
+            localRotation = Quaternion.axisAngle(
+                Vector3(0.0f, 1.0f, 0.0f), value -20
+            )
+        }
+        if (animal == 1) {
+            GlobalModel.bear_rotation = GlobalModel.bear_rotation - 20
+        } else if ( animal == 2 ) {
+            GlobalModel.cat_rotation = GlobalModel.cat_rotation - 20
+        } else if ( animal == 3 ) {
+            GlobalModel.cow_rotation = GlobalModel.cow_rotation - 20
+        } else if ( animal == 4 ) {
+            GlobalModel.dog_rotation = GlobalModel.dog_rotation - 20
+        }
+    }
+
+    fun rotateRight(node:TransformableNode, value: Float, animal: Int) {
+        node.apply {
+            localRotation = Quaternion.axisAngle(
+                Vector3(0.0f, 1.0f, 0.0f), value + 20
+            )
+        }
+        if (animal == 1) {
+            GlobalModel.bear_rotation = GlobalModel.bear_rotation + 20
+        } else if ( animal == 2 ) {
+            GlobalModel.cat_rotation = GlobalModel.cat_rotation + 20
+        } else if ( animal == 3 ) {
+            GlobalModel.cow_rotation = GlobalModel.cow_rotation + 20
+        } else if ( animal == 4 ) {
+        GlobalModel.dog_rotation = GlobalModel.dog_rotation + 20
+        }
+    }
+
+    fun setVisible(node1:TransformableNode) {
+        if (node1.isEnabled == false) {
+            node1.isEnabled = !node1.isEnabled
+        }
+        //node1.isEnabled = node1.isEnabled
+    }
+    fun setInvisible(node1:TransformableNode,  node2:TransformableNode) {
+        if (node1.isEnabled == true) {
+            node1.isEnabled = !node1.isEnabled
+        }
+        if (node2.isEnabled == true) {
+            node2.isEnabled = !node2.isEnabled
+        }
+
+    }
+
     private fun createModel(anchorNode: AnchorNode, selected: Int) {
+        val nameViewBear = TransformableNode(arFragment?.transformationSystem)
+        val nameViewCat = TransformableNode(arFragment?.transformationSystem)
+        val nameViewCow = TransformableNode(arFragment?.transformationSystem)
+        val nameViewDog = TransformableNode(arFragment?.transformationSystem)
         val renderableNode = TransformableNode(arFragment?.transformationSystem)
+        renderableNode.localPosition = Vector3(0f, 0f, 0f)
+        renderableNode.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f),  GlobalModel.bear_rotation)
+        //renderableNode.scaleController.minScale  = 100f
+        //renderableNode.scaleController.maxScale = 200f
         renderableNode.setParent(anchorNode)
+        val renderableNodeCat = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeCat.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeCat.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f),  GlobalModel.cat_rotation)
+        renderableNodeCat.setParent(anchorNode)
+        val renderableNodeCow = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeCow.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeCow.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.cow_rotation)
+        renderableNodeCow.setParent(anchorNode)
+        val renderableNodeDog = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeDog.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeDog.localRotation = Quaternion.axisAngle(Vector3(0f, 1f, 0f),  GlobalModel.dog_rotation)
+        renderableNodeDog.setParent(anchorNode)
+        right_button.setOnClickListener {
+            Toast.makeText(applicationContext, "Select an animal model before rotation", Toast.LENGTH_SHORT).show()
+        }
+        left_button.setOnClickListener {
+            Toast.makeText(applicationContext, "Select an animal model before rotation", Toast.LENGTH_SHORT).show()
+        }
         when (selected) {
-            1 -> {
+            0 -> {
                 renderableNode.renderable = bearRendereable
                 renderableNode.select()
+                renderableNodeCat.renderable = catRendereable
+                renderableNodeCat.select()
+                renderableNodeCow.renderable = cowRendereable
+                renderableNodeCow.select()
+                renderableNodeDog.renderable = dogRendereable
+                renderableNodeDog.select()
 
-                val nameView = TransformableNode(arFragment?.transformationSystem)
-                nameView.localPosition = Vector3(0f, renderableNode.localPosition.y + 0.5f, 0f)
-                nameView.setParent(anchorNode)
-                nameView.renderable = animalName
-                nameView.select()
+                nameViewBear.localPosition = Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewBear.setParent(anchorNode)
+                nameViewBear.renderable = animalName
+                nameViewBear.select()
+
+                nameViewCat.localPosition = Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewCat.setParent(anchorNode)
+                nameViewCat.renderable = animalName2
+                nameViewCat.select()
+
+                nameViewCow.localPosition = Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewCow.setParent(anchorNode)
+                nameViewCow.renderable = animalName3
+                nameViewCow.select()
+
+                nameViewDog.localPosition = Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewDog.setParent(anchorNode)
+                nameViewDog.renderable = animalName4
+                nameViewDog.select()
+
+                setInvisible(renderableNode,renderableNodeCat)
+                setInvisible(nameViewCow,renderableNodeCow)
+                setInvisible(nameViewCat,nameViewBear)
+                setInvisible(nameViewDog,renderableNodeDog)
+                right_button.isClickable = true
+                right_button.isVisible = true
+                left_button.isClickable = true
+                left_button.isVisible = true
+
+                bear.isVisible = true
+                bear.isClickable = true
+
+                cat.isVisible = true
+                cat.isClickable = true
+
+                cow.isVisible = true
+                cow.isClickable = true
+
+                dog.isVisible = true
+                dog.isClickable = true
+            }
+            1 -> {
             }
             2 ->{
-                renderableNode.renderable = catRendereable
-                renderableNode.select()
-                val nameView = TransformableNode(arFragment?.transformationSystem)
-                nameView.localPosition = Vector3(0f, renderableNode.localPosition.y + 0.5f, 0f)
-                nameView.setParent(anchorNode)
-                nameView.renderable = animalName2
-                nameView.select()
             }
             3 ->{
-                renderableNode.renderable = dogRendereable
-                renderableNode.select()
+                /*
+                renderableNode.renderable = cowRendereable
+                renderableNode.select()*/
             }
             4 ->{
-                renderableNode.renderable = cowRendereable
+                /*
+                renderableNode.renderable = dogRendereable
                 renderableNode.select()
+                */
             }
             5 ->{
                 renderableNode.renderable = elephantRendereable
@@ -485,6 +679,63 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             12 ->{
                 renderableNode.renderable = wolverineRendereable
                 renderableNode.select()
+            }
+        }
+        bear.setOnClickListener {
+            this.selected = 1
+            setInvisible(renderableNodeCat,renderableNodeCow)
+            setInvisible(nameViewCat,nameViewCow)
+            setInvisible(renderableNodeDog,nameViewDog)
+            setVisible(renderableNode)
+            setVisible(nameViewBear)
+            right_button.setOnClickListener {
+                rotateRight(renderableNode, GlobalModel.bear_rotation, 1)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNode, GlobalModel.bear_rotation, 1)
+            }
+
+        }
+        cat.setOnClickListener {
+            this.selected = 2
+            setInvisible(renderableNode,renderableNodeCow)
+            setInvisible(nameViewBear,nameViewCow)
+            setInvisible(renderableNodeDog,nameViewDog)
+            setVisible(renderableNodeCat)
+            setVisible(nameViewCat)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeCat, GlobalModel.cat_rotation, 2)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeCat, GlobalModel.cat_rotation, 2)
+            }
+        }
+        cow.setOnClickListener {
+            this.selected = 4
+            setInvisible(renderableNodeCat,renderableNode)
+            setInvisible(nameViewBear,nameViewCat)
+            setInvisible(renderableNodeDog,nameViewDog)
+            setVisible(renderableNodeCow)
+            setVisible(nameViewCow)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeCow, GlobalModel.cow_rotation, 3)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeCow, GlobalModel.cow_rotation, 3)
+            }
+        }
+        dog.setOnClickListener {
+            this.selected = 4
+            setInvisible(renderableNodeCat,renderableNode)
+            setInvisible(nameViewBear,nameViewCat)
+            setInvisible(renderableNodeCow,nameViewCow)
+            setVisible(renderableNodeDog)
+            setVisible(nameViewDog)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeDog, GlobalModel.dog_rotation, 4)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeDog, GlobalModel.dog_rotation, 4)
             }
         }
     }
@@ -554,114 +805,56 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 }
-// End of MainAvtivity
+// End of MainActivity
 
 object GlobalModel {
     var position = 0 // for wiki texts
     var speechText = "" // for speech to text placeholder
-    var testi = ""
-    var testi2 = ""
+    var bear_txt = ""
+    var cat_txt = ""
+    var cow_txt = ""
+    var dog_txt = ""
+
+    var bear_rotation = 180f
+    var cat_rotation = 180f
+    var cow_rotation = 180f
+    var dog_rotation = 180f
 }
 
 class Conn(mHand: Handler?) : Runnable {
     val myHandler = mHand
     override fun run() {
         try {
-            val res = URL("https://users.metropolia.fi/~jaripie/karhu").readText()
-            Log.d("res", res)
+            val resultBear = URL("https://users.metropolia.fi/~jaripie/karhu").readText()
+            Log.d("res", resultBear)
             val msg = myHandler?.obtainMessage()
             msg?.what = 0
-            msg?.obj = res
+            msg?.obj = resultBear
             myHandler?.sendMessage(msg)
 
-            val res2 = URL("https://users.metropolia.fi/~jaripie/cat").readText()
-            Log.d("res", res)
+            val resultCat = URL("https://users.metropolia.fi/~jaripie/cat").readText()
+            Log.d("res", resultBear)
             val msg2 = myHandler?.obtainMessage()
             msg2?.what = 1
-            msg2?.obj = res2
+            msg2?.obj = resultCat
             myHandler?.sendMessage(msg2)
+
+            val resultCow = URL("https://users.metropolia.fi/~jaripie/cow").readText()
+            Log.d("res", resultBear)
+            val msg3 = myHandler?.obtainMessage()
+            msg3?.what = 2
+            msg3?.obj = resultCow
+            myHandler?.sendMessage(msg3)
+
+            val resultDog = URL("https://users.metropolia.fi/~jaripie/dog").readText()
+            Log.d("res", resultBear)
+            val msg4 = myHandler?.obtainMessage()
+            msg4?.what = 3
+            msg4?.obj = resultDog
+            myHandler?.sendMessage(msg4)
 
         } catch (e: Exception) {
             Log.d("Error", e.toString())
         }
     }
 }
-
-
-/*
-http://users.metropolia.fi/~jaripie/karhu
-http://users.metropolia.fi/~jaripie/cat
-http://users.metropolia.fi/~jaripie/cow
-http://users.metropolia.fi/~jaripie/dog
-http://users.metropolia.fi/~jaripie/elephant
-http://users.metropolia.fi/~jaripie/reindeer
-http://users.metropolia.fi/~jaripie/wolverine
-http://users.metropolia.fi/~jaripie/lion
-
-class ExampleClass {
-    companion object{
-        fun writeText(textValue:String,mainActivity:MainActivity) {
-            mainActivity.testMessage.text = textValue
-        }
-    }
-}
-
-                //addName(anchorNode, renderableNode, "Wolverine")
-
-               // val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
-                //val view = inflater.inflate(R.layout.name_animal, root_layout, true)
-                //val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
-                //textView.visibility = View.INVISIBLE
-                //textView.text = GlobalModel.testi
-                //textView.setTextColor(Color.RED)
-                //textView.visibility = View.INVISIBLE
-
-
-        //textView.visibility = View.INVISIBLE
-        //setContentView(R.layout.name_animal)
-        //nameAnimal.text = GlobalModel.testi
-
-
-        /*val inflater:LayoutInflater = LayoutInflater.from(applicationContext)
-        val view = inflater.inflate(R.layout.name_animal, root_layout, true)
-        val textView : TextView = view?.findViewById(R.id.nameAnimal) as TextView
-        textView.text = GlobalModel.testi
-        textView.setTextColor(Color.RED)
-
-             setContentView(R.layout.name_animal)
-        val ss = findViewById(R.id.nameAnimal) as TextView
-        ss.setTextColor(Color.GREEN)
-        ss.text = "sss"
-        Log.d("AAAA", "${ss.text}")
-
-
-
-        // Get the LayoutInflater from Context
-        val layoutInflater:LayoutInflater = LayoutInflater.from(applicationContext)
-
-
-        // Inflate the layout using LayoutInflater
-        val view: View = layoutInflater.inflate(
-            R.layout.name_animal, // Custom view/ layout
-            root_layout, // Root layout to attach the view
-            false // Attach with root layout or not
-        )
-        // Find the text view from custom layout
-        val label = view.findViewById<TextView>(R.id.planetInfoCard)
-
-        // Set the text of custom view's text view widget
-        label.text = "Cute Flower."
-
-        // Finally, add the view/custom layout to the activity root layout
-        root_layout.addView(view,0)
-*/
-
-
-        textView.text = GlobalModel.testi2
-
-        ViewRenderable.builder()
-            .setView(this, view)
-            .build()
-            .thenAccept { renderable -> animalName2 = renderable }
-
- */
