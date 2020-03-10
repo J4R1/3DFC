@@ -2,6 +2,7 @@ package com.example.a3dfc
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -27,6 +28,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
 import androidx.core.view.isVisible
+import com.google.ar.core.Session
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
@@ -64,8 +66,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private var mSensors: Sensor? = null
     //*/ end of sensors ----------
 
-    //lateinit var textToSpeech: TextToSpeech
+    // Initialize the text to speech enginge
+    var tts: TextToSpeech? = null
     private val REQUEST_CODE_SPEECH_INPUT = 100
+
     private val mHandler: Handler = object :
         Handler(Looper.getMainLooper()) {
         override fun handleMessage(inputMessage: Message) {
@@ -97,11 +101,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
             //Setup AR
             arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_ux_fragment) as ArFragment
-
             setArrayView()
             setClickListener()
             setupModel()
-
             arFragment?.setOnTapArPlaneListener { hitResult, _, _ ->
 
                 val anchor = hitResult.createAnchor()
@@ -112,14 +114,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             }
         }
     }
-    var tts: TextToSpeech? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         tts = TextToSpeech(this, this)
-//        fun speakOut() {
-//            val text = "Holla holla get dolla!"
-//            tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-//        }
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         //Check internet connection
@@ -131,6 +127,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             Toast.makeText(applicationContext, "This app requires INTERNET, please try again", Toast.LENGTH_LONG).show()
         }
 
+        speak_button.setOnClickListener { SpeechFunction() }
 
         // DialogBox Intro --
         val dialogBuilder = AlertDialog.Builder(this)
@@ -138,8 +135,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         dialogBuilder.setMessage(R.string.intro).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
 
 
-        speak_button.isVisible = false
-        speak_button.isClickable = false
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -188,6 +183,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         right_button.isVisible = false
         left_button.isClickable = false
         left_button.isVisible = false
+        voice_button.isVisible = false
+        voice_button.isClickable = false
+        speak_button.isVisible = false
+        speak_button.isClickable = false
 
         bear.isVisible = false
         bear.isClickable = false
@@ -276,16 +275,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     }
 
     override fun onResume() {
-        super.onResume()
         mSensorManager.registerListener(this, mSensors, 999999998,999999999)//SensorManager.SENSOR_DELAY_NORMAL
         //        Register the sensor on resume of the activity
-
+        super.onResume()
     }
 
     override fun onPause() {
-        super.onPause()
         Log.v("-----onPause-----","unregisterListener")
         sensorManager.unregisterListener(this)
+        super.onPause()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?){
@@ -298,35 +296,35 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             }
         }
 
-        //Set action based on speech
-        if (GlobalModel.speechText == "red") {
-            main.setBackgroundColor(Color.RED)
-        } else if (GlobalModel.speechText == "green") {
-            main.setBackgroundColor(Color.GREEN)
-        } else if (GlobalModel.speechText == "blue") {
-            main.setBackgroundColor(Color.BLUE)
-        } else if (GlobalModel.speechText == "black") {
-            main.setBackgroundColor(Color.BLACK)
-        } else if (GlobalModel.speechText == "white") {
-            main.setBackgroundColor(Color.WHITE)
-        } else if (GlobalModel.speechText == "next") {
-            Toast.makeText(applicationContext,"Next...", Toast.LENGTH_LONG).show()
-        } else if (GlobalModel.speechText == "previous") {
-            Toast.makeText(applicationContext,"Previous...", Toast.LENGTH_LONG).show()
+        // Set action based on speech TODO toasts are placeholders for functions
+        when(GlobalModel.speechText) {
+            "commands", "help" -> tts!!.speak("Available commands are next, previous and read", TextToSpeech.QUEUE_FLUSH, null, "")
+            "next" -> Toast.makeText(applicationContext, "Next animal", Toast.LENGTH_SHORT).show()
+            "previous" -> Toast.makeText(applicationContext, "Previous animal", Toast.LENGTH_SHORT).show()
+            "read" -> voice_button.performClick()
+            else -> tts!!.speak("Please repeat that again", TextToSpeech.QUEUE_FLUSH, null, "")
+
         }
     }
 
     private fun SpeechFunction() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US) //Locale.getDefault()
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say something...")
-        try {
-            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
-        } catch (exp: ActivityNotFoundException)
-        {
-            Toast.makeText(applicationContext,"Speech Not Supported...", Toast.LENGTH_LONG).show()
+        fun doTheSpeech() {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US) //Locale.getDefault()
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say something...")
+            try {
+                startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
+            } catch (exp: ActivityNotFoundException)
+            {
+                Toast.makeText(applicationContext,"Speech Not Supported...", Toast.LENGTH_LONG).show()
+            }
         }
+        val dialogBuilder = AlertDialog.Builder(this)
+        dialogBuilder.setCancelable(false)
+        dialogBuilder.setMessage(R.string.voice_error).setNegativeButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> })
+            .setPositiveButton(R.string.voice_anyway, DialogInterface.OnClickListener { dialog, id -> doTheSpeech()})
+            .show()
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -551,7 +549,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
 
     }
-
+// Loads the models and makes the UI visisble
     private fun createModel(anchorNode: AnchorNode, selected: Int) {
         val nameViewBear = TransformableNode(arFragment?.transformationSystem)
         val nameViewCat = TransformableNode(arFragment?.transformationSystem)
@@ -620,6 +618,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 right_button.isVisible = true
                 left_button.isClickable = true
                 left_button.isVisible = true
+                voice_button.isVisible = true
+                voice_button.isClickable = true
+                speak_button.isVisible = true
+                speak_button.isClickable = true
 
                 bear.isVisible = true
                 bear.isClickable = true

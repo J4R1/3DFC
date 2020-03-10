@@ -102,7 +102,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="28dp"
-            android:layout_marginBottom="141dp"
+            android:layout_marginBottom="140dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
             android:contentDescription="@string/lb_desc"
@@ -117,14 +117,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="161dp"
-            android:layout_marginEnd="162dp"
-            android:layout_marginBottom="150dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginBottom="360dp"
             android:text="@string/speak_button"
             android:textColor="@color/black"
+
             android:contentDescription="@string/sb_desc"
             app:layout_constraintBottom_toTopOf="@+id/textview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
