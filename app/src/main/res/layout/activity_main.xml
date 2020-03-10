@@ -78,6 +78,7 @@
             android:text="@string/voice_button"
             android:textColor="@color/black"
             android:textSize="20sp"
+            android:contentDescription="@string/vb_desc"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -89,7 +90,8 @@
             android:layout_marginBottom="140dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
-            android:text="@string/right"
+            android:contentDescription="@string/rb_desc"
+            android:text="@string/right_button"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -103,7 +105,8 @@
             android:layout_marginBottom="141dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
-            android:text="@string/left"
+            android:contentDescription="@string/lb_desc"
+            android:text="@string/left_button"
             android:textColor="@color/black"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -118,6 +121,7 @@
             android:layout_marginBottom="150dp"
             android:text="@string/speak_button"
             android:textColor="@color/black"
+            android:contentDescription="@string/sb_desc"
             app:layout_constraintBottom_toTopOf="@+id/textview"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
