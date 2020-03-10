@@ -46,5 +46,6 @@
 
     <!-- Error messages -->
     <string name="voice_error">Currently voice input forces a restart of ARCore</string>
+    <string name="voice_anyway">Show me it anyway</string>
 <!--    <string name="flashlight_error">Currently it isn\'t possible to turn on the device\'s torch while ARCore is running.</string>-->
 </resources>

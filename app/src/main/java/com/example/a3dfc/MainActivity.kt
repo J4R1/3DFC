@@ -2,6 +2,7 @@ package com.example.a3dfc
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -307,19 +308,23 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     }
 
     private fun SpeechFunction() {
+        fun doTheSpeech() {
+            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US) //Locale.getDefault()
+            intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say something...")
+            try {
+                startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
+            } catch (exp: ActivityNotFoundException)
+            {
+                Toast.makeText(applicationContext,"Speech Not Supported...", Toast.LENGTH_LONG).show()
+            }
+        }
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setCancelable(false)
-        dialogBuilder.setMessage(R.string.voice_error).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.US) //Locale.getDefault()
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say something...")
-        try {
-            startActivityForResult(intent, REQUEST_CODE_SPEECH_INPUT)
-        } catch (exp: ActivityNotFoundException)
-        {
-            Toast.makeText(applicationContext,"Speech Not Supported...", Toast.LENGTH_LONG).show()
-        }
+        dialogBuilder.setMessage(R.string.voice_error).setNegativeButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> })
+            .setPositiveButton(R.string.voice_anyway, DialogInterface.OnClickListener { dialog, id -> doTheSpeech()})
+            .show()
     }
 
     private fun isNetworkAvailable(): Boolean {
