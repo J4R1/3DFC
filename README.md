@@ -57,7 +57,7 @@ It also has the ability to recognize your current location, so that multiple mus
   
   Or  
  
-  1. Download the [APK](https://www.github.com/J4R1/3DFC/app/build/outputs/apk/debug/app-debug.apk)
+  1. Download the [APK](https://www.github.com/J4R1/3DFC/3DFC.apk)
   2. Sideload into your Android phone
   3. Run
 
