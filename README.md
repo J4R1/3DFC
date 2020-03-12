@@ -33,7 +33,7 @@
 # About The Project 
 <!-- Screenshot here  -->
 <!-- Description here -->
-3DFC is an app that transforms your surrounding area into a natural history museum, or add a dash of technology to an already existing one.
+3DFC is an app to transform your surrounding area into a natural history museum, or to add a dash of technology to an already existing one.
 
 It uses AR-technology to display life size animals right next to you, with a small information table above them.
 
