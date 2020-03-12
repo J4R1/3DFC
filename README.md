@@ -32,7 +32,12 @@
 
 # About The Project 
 <!-- Screenshot here  -->
-![Bear and it's info](images/bear.jpg)
+<br />
+<p align="center">
+  <img src="images/bear.jpg" width="295" height="640">
+  <p/>
+<br />
+
 3DFC is an app to transform your surrounding area into a natural history museum, or to add a dash of technology to an already existing one.
 
 It uses AR-technology to display life size animals right next to you, with a small information table above them.
@@ -67,9 +72,18 @@ It also has the ability to recognize your current location, so that multiple mus
 We envisioned 3D Fauna Center to either be a replacement for a live museum experience, used in for example remote areas with little access to such sites or as a easy to implement and modify addition to traditional museums. 
 
 That will explain itself briefly on startup, but here are the main points.
-![The start screen](images/start.jpg)
+<br />
+<p align="center">
+  <img src="images/start.jpg" width="295" height="640">
+  <p/>
+<br />
+  1. Scan the area around you until a white dot matrix appears.
+  <br />
+  <p align="center">
+  <img src="images/looking.jpg" width="295" height="640">
+  <p/>
+<br />
 
-  1. Scan the area around you until a white dot matrix appears.![Looking for an area](images/looking.jpg) 
   2. Choose and animal from the bottom of the screen, it can be rotated using the two buttons at the bottom of the screen.
   3. To hear the info text read out loud, press the image of the speaker, above the right rotation button.
   4. (The button above that is the voice command button, which currently forces an ARCore reset.)
