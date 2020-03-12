@@ -68,6 +68,22 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/checklist_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/round_button"
+            android:padding="12dp"
+            android:text="@string/checklist_button"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:contentDescription="@string/cl_desc"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+
+        <Button
             android:id="@+id/voice_button"
             android:layout_width="50dp"
             android:layout_height="50dp"

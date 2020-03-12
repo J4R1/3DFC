@@ -16,9 +16,13 @@
     <string name="flashlight_button">&#x1F526;</string>
     <string name="fb_desc">Turn on the flashlight</string>
     <string name="right_button">&#8618;</string>
-    <string name="left_button">&#x21A9;</string>
     <string name="rb_desc">Rotate the animal right</string>
+    <string name="left_button">&#x21A9;</string>
     <string name="lb_desc">Rotate the animal left</string>
+    <string name="checklist_button">️&#x1F5FA;</string>
+    <string name="cl_empty">You haven\'t visited any sites</string>
+    <string name="cl_desc">Open the checklist of center locations</string>
+    <string name="cl_error">File not found or an issue creating it, please check your permissions</string>
 
     <!-- Navigation -->
     <string name="previous">tour</string>
