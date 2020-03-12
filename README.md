@@ -3,7 +3,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/J4R1/3DFC">
-    <img src="images/logo.png" alt="Logo" width="120" height="120">
+    <img src="images/logo.png" alt="Logo" width="200" height="200">
   </a>
 
   <h3 align="center">3D Fauna center</h3>
@@ -55,13 +55,24 @@ It also has the ability to recognize your current location, so that multiple mus
 ## Installation
   1. Download the project
   2. Run through Android Studio  
+  
   Or  
+ 
   1. Download the APK
   2. Sideload into your Android phone
   3. Run
 
 # Usage
 <!-- Couple screenshots here  -->
+We envisioned 3D Fauna Center to either be a replacement for a live museum experience, used in for example remote areas with little access to such sites or as a easy to implement and modify addition to traditional museums. 
+
+That will explain itself briefly on startup, but here are the main points.
+
+  1. Scan the area around you until a white dot matrix appears.
+  2. Choose and animal from the bottom of the screen, it can be rotated using the two buttons at the bottom of the screen.
+  3. To hear the info text read out loud, press the image of the speaker, above the right rotation button.
+  4. (The button above that is the voice command button, which currently forces an ARCore reset.)
+  5. The button on the top left shows a timestamped list of the places you have visited.
 
 # Licenses
 ## License for the models used
