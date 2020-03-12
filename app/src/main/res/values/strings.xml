@@ -10,7 +10,15 @@
 
     <!-- Buttons -->
     <string name="voice_button">&#x1F399;</string>
+    <string name="vb_desc">Reads the animal\'s description out loud</string>
     <string name="speak_button">&#x1F50A;</string>
+    <string name="sb_desc">Input a voice command</string>
+    <string name="flashlight_button">&#x1F526;</string>
+    <string name="fb_desc">Turn on the flashlight</string>
+    <string name="right_button">&#8618;</string>
+    <string name="left_button">&#x21A9;</string>
+    <string name="rb_desc">Rotate the animal right</string>
+    <string name="lb_desc">Rotate the animal left</string>
 
     <!-- Navigation -->
     <string name="previous">tour</string>
@@ -23,19 +31,26 @@
     <string name="third_menu">Turn background green</string>
     <string name="menu_text">Click the dots</string>
 
-    <!-- Descriptions -->
-    <string name="desc1">description</string>
-    <string name="desc2">description</string>
-    <string name="desc3">description</string>
-    <string name="desc4">description</string>
-    <string name="desc5">description</string>
-    <string name="desc6">description</string>
-    <string name="desc7">description</string>
-    <string name="desc8">description</string>
-    <string name="desc9">description</string>
-    <string name="desc10">description</string>
-    <string name="desc11">description</string>
-    <string name="desc12">description</string>
+    <!-- Animal Descriptions -->
+    <string name="desc1">A brown bear</string>
+    <string name="desc2">A common house cat</string>
+    <string name="desc3">A large cow</string>
+    <string name="desc4">A dog</string>
+    <string name="desc5">An elephant</string>
+    <string name="desc6">A ferret</string>
+    <string name="desc7">A hippopotamus</string>
+    <string name="desc8">A horse</string>
+    <string name="desc9">A koala bear</string>
+    <string name="desc10">A lion</string>
+    <string name="desc11">A reindeer</string>
+    <string name="desc12">A wolverine</string>
 
+    <!-- Intro text -->
+    <string name="intro">Welcome to 3D Fauna Center!\n\nIn this virtual museum you can view different animals in their actual sizes and read short information packets on them.\n\nTo start, slowly wave your phone over a flat surface until a matrix of white dots appear, then just select any of the available animals to start learning.</string>
+    <string name="intro_ok">I understand!</string>
 
+    <!-- Error messages -->
+    <string name="voice_error">Currently voice input forces a restart of ARCore</string>
+    <string name="voice_anyway">Show me it anyway</string>
+<!--    <string name="flashlight_error">Currently it isn\'t possible to turn on the device\'s torch while ARCore is running.</string>-->
 </resources>

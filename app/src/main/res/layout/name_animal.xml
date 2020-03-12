@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/planetInfoCard"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/nameAnimal"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_weight="1"
@@ -9,6 +8,7 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="6dp"
+    android:text="abc"
+    android:textAlignment="center"
     android:textColor="@color/button_fill"
-    android:text="@string/animal_name"
-    android:textAlignment="center" />
+    android:textSize="12sp" />

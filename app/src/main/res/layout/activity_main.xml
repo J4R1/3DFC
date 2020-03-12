@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -18,87 +20,120 @@
     <!-- android:background="@drawable/gradient_bg" -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/main"
         tools:context=".MainActivity">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/textview"
             android:id="@+id/textviewfetch"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="30dp"
+            android:text="@string/textview"
             app:layout_constraintBottom_toTopOf="@+id/textview"
-            android:paddingBottom="30dp" />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/textview"
             android:id="@+id/sensor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="30dp"
+            android:text="@string/textview"
             android:textColor="@color/yellow"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/textviewfetch"
-            android:paddingBottom="30dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/textview"
-            android:id="@+id/direction"
-            android:textColor="@color/green"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/sensor"
-            android:paddingBottom="30dp" />
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
+            android:id="@+id/direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="30dp"
+            android:text="@string/textview"
+            android:textColor="@color/green"
+            app:layout_constraintBottom_toTopOf="@+id/sensor"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/textview"
-            android:id="@+id/textview"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/circle_button"
+            android:id="@+id/voice_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginStart="180dp"
-            android:layout_marginEnd="181dp"
-            android:layout_marginBottom="150dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginBottom="250dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
             android:text="@string/voice_button"
             android:textColor="@color/black"
             android:textSize="20sp"
+            android:contentDescription="@string/vb_desc"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/right_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginBottom="150dp"
+            android:background="@drawable/round_button"
+            android:padding="12dp"
+            android:contentDescription="@string/rb_desc"
+            android:text="@string/right_button"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            android:id="@+id/left_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="150dp"
+            android:background="@drawable/round_button"
+            android:padding="12dp"
+            android:contentDescription="@string/lb_desc"
+            android:text="@string/left_button"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/speak_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="161dp"
-            android:layout_marginEnd="162dp"
-            android:layout_marginBottom="150dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginBottom="350dp"
+            android:padding="12dp"
+            android:textSize="20sp"
+            android:background="@drawable/round_button"
+            android:contentDescription="@string/sb_desc"
             android:text="@string/speak_button"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/textview"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="100dp"
+        android:layout_gravity="bottom">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -109,84 +144,84 @@
                 android:id="@+id/bear"
                 android:src="@drawable/bear"
                 android:contentDescription="@string/desc1"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/cat"
                 android:src="@drawable/cat"
                 android:contentDescription="@string/desc2"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/cow"
                 android:src="@drawable/cow"
                 android:contentDescription="@string/desc3"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/dog"
                 android:src="@drawable/dog"
                 android:contentDescription="@string/desc4"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/elephant"
                 android:src="@drawable/elephant"
                 android:contentDescription="@string/desc5"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/ferret"
                 android:src="@drawable/ferret"
                 android:contentDescription="@string/desc6"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/hippopotamus"
                 android:src="@drawable/hippopotamus"
                 android:contentDescription="@string/desc7"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/horse"
                 android:src="@drawable/horse"
                 android:contentDescription="@string/desc8"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/koala_bear"
                 android:src="@drawable/koala_bear"
                 android:contentDescription="@string/desc9"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/lion"
                 android:src="@drawable/lion"
                 android:contentDescription="@string/desc10"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/reindeer"
                 android:src="@drawable/reindeer"
                 android:contentDescription="@string/desc11"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/wolverine"
                 android:src="@drawable/wolverine"
                 android:contentDescription="@string/desc12"
-                android:layout_width="100dp"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>

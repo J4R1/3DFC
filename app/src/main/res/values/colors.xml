@@ -10,6 +10,8 @@
     <color name="navigation_text">#9C27B0</color>
     <color name="navigation_background">#11152C</color>
 
+    <color name="animal">#80333639</color>
+    <color name="animalTransparent">#00333639</color>
 
     <color name="blue">#0000AA</color>
     <color name="green">#00ff00</color>
