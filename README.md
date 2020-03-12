@@ -32,7 +32,6 @@
 
 # About The Project 
 <!-- Screenshot here  -->
-<!-- Description here -->
 3DFC is an app to transform your surrounding area into a natural history museum, or to add a dash of technology to an already existing one.
 
 It uses AR-technology to display life size animals right next to you, with a small information table above them.
@@ -58,7 +57,7 @@ It also has the ability to recognize your current location, so that multiple mus
   
   Or  
  
-  1. Download the APK
+  1. Download the [APK](https://www.github.com/J4R1/3DFC/app/build/outputs/apk/debug/app-debug.apk)
   2. Sideload into your Android phone
   3. Run
 
