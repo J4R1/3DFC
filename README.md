@@ -14,11 +14,9 @@
   </p>
 </p>
 
-[3D Fauna Center Logo](images/logo.png)
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [3DFC](#3dfc)
 - [About The Project](#about-the-project)
     - [Built with](#built-with)
 - [Installation & Requirements](#installation--requirements)
@@ -50,7 +48,7 @@ It also has the ability to recognize your current location, so that multiple mus
 ## Requirements
   * Minimum SDK version 26 (Android 8 Oreo)
   * Internet access  
-    ** At this point the animal info only works in Metropolia's networks
+    * At this point the animal info only works in Metropolia's networks
   * ARCore compatible phone 
   * Access to location services and camera
 
