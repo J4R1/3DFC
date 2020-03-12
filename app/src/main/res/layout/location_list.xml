@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checklist_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:background="@drawable/rounded_bg"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="6dp"
+    android:text="@string/cl_empty"
+    android:contentDescription="@string/cl_desc"
+    android:textAlignment="center"
+    android:textColor="@color/button_fill"
+    android:textSize="12sp" />

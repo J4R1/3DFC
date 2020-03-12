@@ -35,6 +35,8 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import java.lang.Exception
 import java.net.URL
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 import android.content.pm.PackageManager
 import android.location.Location
@@ -81,7 +83,35 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private var mSensors: Sensor? = null
     //*/ end of sensors ----------
 
-    // Initialize the text to speech enginge
+    // TODO add explanation of checklist to start
+    // Name of the file which contains the visited places
+    internal val FILENAME = "locationChecklist.txt"
+    // Display the current list of visited places
+    fun readChecklist() {
+        openFileOutput(FILENAME, Context.MODE_APPEND).use { it.write("".toByteArray()) }
+        GlobalModel.checklist_text = openFileInput(FILENAME)?.bufferedReader().use {
+            it?.readText() ?: getString(R.string.cl_error)}
+        // TODO show the file
+        Log.d("debug", "reads checklist here!")
+    }
+
+    // Write to visited places list after validation and add a timestamp
+    fun writeChecklist(lon: Double, lat: Double) {
+        var name = when {
+                lon == 60.00 && lat == 60.00 -> "Leppävaara"
+                lon == 50.00 && lat == 50.00 -> "Keskusta"
+                else -> return
+        }
+        val format = DateTimeFormatter.ofPattern("dd-MM-yyy")
+        var date = LocalDate.now().format(format)
+        Log.d("debug", "Date is $date")
+        openFileOutput(FILENAME, Context.MODE_APPEND).use {
+            it.write("You visited $name on $date\n".toByteArray())
+        }
+        Log.d("debug", "writes checklist here!")
+    }
+
+    // Initialize the text to speech engine
     var tts: TextToSpeech? = null
     private val REQUEST_CODE_SPEECH_INPUT = 100
 
@@ -127,6 +157,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         tts = TextToSpeech(this, this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        // Initial run of checklist
+        readChecklist()
+
         //Check internet connection
         if (isNetworkAvailable()) {
             val myRunnable = Conn(mHandler)
@@ -140,8 +173,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             ).show()
         }
 
-
+location-checklist
+        // Add onClickListeners for the speech recognition
         speak_button.setOnClickListener { SpeechFunction() }
+        checklist_button.setOnClickListener { readChecklist() }
 
         // DialogBox Intro --
         val dialogBuilder = AlertDialog.Builder(this)
@@ -195,6 +230,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
         setButtonsInvisible()
     }
+
 
     @Suppress("DEPRECATION")
     fun getLocation() {
@@ -670,6 +706,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
         }
 
+
         // Loads the models and makes the UI visisble
         private fun createModel(anchorNode: AnchorNode, selected: Int) {
             val nameViewBear = TransformableNode(arFragment?.transformationSystem)
@@ -704,6 +741,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                     "Select an animal model before rotation",
                     Toast.LENGTH_SHORT
                 ).show()
+
             }
             left_button.setOnClickListener {
                 Toast.makeText(
@@ -929,6 +967,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             )
         }
 
+
         private fun setClickListener() {
             for (view in arrayView!!) {
                 view.setOnClickListener { thisView ->
@@ -966,14 +1005,15 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             if (status == TextToSpeech.SUCCESS) {
                 val result = tts!!.setLanguage(Locale.US)
 
+
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.d("asdf", "Lang error")
                 } else {
                     voice_button.isEnabled = true
                 }
+
             } else {
                 Log.d("asdf", "Text to Speech init fail")
-            }
         }
     }
 // End of MainActivity
@@ -990,6 +1030,7 @@ object GlobalModel {
     var cat_rotation = 180f
     var cow_rotation = 180f
     var dog_rotation = 180f
+
 
     var latitude = 0.00
     var longitude = 0.00
