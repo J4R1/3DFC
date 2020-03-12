@@ -31,13 +31,32 @@ import kotlinx.android.synthetic.main.name_animal.*
 import java.lang.Exception
 import java.net.URL
 import java.util.*
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
+import android.preference.PreferenceManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import kotlinx.android.synthetic.main.activity_main.*
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.overlay.ItemizedIconOverlay
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
+import org.osmdroid.views.overlay.OverlayItem
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
+
+class MainActivity : AppCompatActivity(), SensorEventListener, LocationListener {
 
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
     private var selected: Int = 1 //Default value
-
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bearRendereable: ModelRenderable
     private lateinit var catRendereable: ModelRenderable
     private lateinit var dogRendereable: ModelRenderable
@@ -98,6 +117,34 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             myThread.start()
         }
 
+        //Location
+        val ctx = applicationContext
+        //important! set your user agent to prevent getting banned from the osm servers
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+        if ((Build.VERSION.SDK_INT >= 26 &&
+                    ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient.lastLocation.addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+                val lat = location?.latitude.toString()
+                val long = location?.longitude.toString()
+
+                //val lokaatio = GeoPoint(lat.toDouble(), long.toDouble())
+
+            }
+            fusedLocationClient =
+                LocationServices.getFusedLocationProviderClient(this)
+            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 60 * 1000, 50f, this)
+            createLocationRequest()
+        } else {
+            Log.d("--ELSE--", "------------------Else-----------------------------------------")
+        }
+
+
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -135,8 +182,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             Toast.makeText(applicationContext, "Press the button below and name a color.\nFor example: 'RED'", Toast.LENGTH_LONG).show()
         }
     }
+    fun createLocationRequest() {
+        Log.d("--GG--", "createLocationRequest() started" )
 
+        val locationRequest = LocationRequest.create()?.apply {
+            interval = 10000
+            fastestInterval = 5000
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+        val locRequest = locationRequest.toString()
+        Log.d("--HH--", locRequest)
+    }
+
+    override fun onLocationChanged(p0: Location?) {
+        //new location react...
+        Log.d("GEOLOCATION", "new latitude: ${p0?.latitude} and longitude: ${p0?.longitude}")
+    }
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?)
+    {}
+    override fun onProviderEnabled(p0: String?) {}
+    override fun onProviderDisabled(p0: String?) {}
     override fun onSensorChanged(p0: SensorEvent?) {
+        /*
         Log.v("----onSensorChanged----","p0!!.values[0]")
         //Sensor change value
         val data = p0!!.values[0]
@@ -169,7 +236,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         } else {
             Log.v("-----FAILURE-----","No sensor data")
             Toast.makeText(this, "#####FAIL #####", Toast.LENGTH_SHORT).show()
-        }
+        }*/
     }
 
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -474,7 +541,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 // End of MainAvtivity
 
 object GlobalModel {
-    var speechText = ""
+    var position = 0 // for wiki texts
+    var speechText = "" // for speech to text placeholder
+    var bear_txt = ""
+    var cat_txt = ""
+    var cow_txt = ""
+    var dog_txt = ""
+
+    var bear_rotation = 180f
+    var cat_rotation = 180f
+    var cow_rotation = 180f
+    var dog_rotation = 180f
 }
 
 class Conn(mHand: Handler?) : Runnable {
