@@ -1,6 +1,20 @@
 # 3DFC
-<!-- Logo here -->
-![3D Fauna Center Logo](images/logo.png)
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/J4R1/3DFC">
+    <img src="images/logo.png" alt="Logo" width="120" height="120">
+  </a>
+
+  <h3 align="center">3D Fauna center</h3>
+
+  <p align="center">
+    A virtual museum companion
+    <br />
+  </p>
+</p>
+
+[3D Fauna Center Logo](images/logo.png)
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
@@ -8,10 +22,13 @@
 - [About The Project](#about-the-project)
     - [Built with](#built-with)
 - [Installation & Requirements](#installation--requirements)
+    - [Requirements](#requirements)
+    - [Installation](#installation)
 - [Usage](#usage)
-- [Licences](#licences)
-    - [Licence for the models used](#licence-for-the-models-used)
+- [Licenses](#licenses)
+    - [License for the models used](#license-for-the-models-used)
 - [Authors](#authors)
+- [Acknowledgements](#acknowledgements)
 
 <!-- markdown-toc end -->
 
@@ -27,20 +44,29 @@ It also has the ability to recognize your current location, so that multiple mus
 
   * Kotlin
   * Android Studio
-
+  * Accessibility in mind: the colors we have used for the text fields are all vision-impaired friendly and all the buttons have alt-texts for screen readers. There is even a button to read the current animals info text out loud.
 # Installation & Requirements
 
-  * Minimun SDK version 26 (Android 8 Oreo)
+## Requirements
+  * Minimum SDK version 26 (Android 8 Oreo)
   * Internet access  
     ** At this point the animal info only works in Metropolia's networks
   * ARCore compatible phone 
   * Access to location services and camera
 
+## Installation
+  1. Download the project
+  2. Run through Android Studio  
+  Or  
+  1. Download the APK
+  2. Sideload into your Android phone
+  3. Run
+
 # Usage
 <!-- Couple screenshots here  -->
 
-# Licences
-## Licence for the models used
+# Licenses
+## License for the models used
 
 MIT License
 
@@ -55,3 +81,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # Authors
 [Jari Pietikäinen](https://www.github.com/J4R1) and [Oskari Sieranen](https://www.github.com/oskarits)
+
+# Acknowledgements
+* TX00CK66-3007
