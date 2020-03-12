@@ -1,5 +1,6 @@
 package com.example.a3dfc
-
+import java.math.BigDecimal
+import java.math.RoundingMode
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
@@ -35,13 +36,31 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import java.lang.Exception
 import java.net.URL
 import java.util.*
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
+import android.os.Bundle
+import android.preference.PreferenceManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import kotlinx.android.synthetic.main.activity_main.*
+import org.osmdroid.config.Configuration
+import android.os.Vibrator
+import android.os.VibrationEffect
 
-class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener {
+
+class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener, LocationListener {
 
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
     var selected: Int = 0 //Default value
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var bearRendereable: ModelRenderable
     private lateinit var catRendereable: ModelRenderable
     private lateinit var cowRendereable: ModelRenderable
@@ -77,26 +96,18 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 val msg = inputMessage.obj.toString() //.take(30)
                 //textviewfetch.text = msg //inputMessage.obj.toString()
                 GlobalModel.bear_txt = msg
-            } else {
-                GlobalModel.cow_txt = "Network error"
             }
             if (inputMessage.what == 1) {
                 val msg = inputMessage.obj.toString() //.take(30)
                 GlobalModel.cat_txt = msg
-            } else {
-                GlobalModel.cat_txt = "Network error"
             }
             if (inputMessage.what == 2) {
                 val msg = inputMessage.obj.toString() //.take(30)
                 GlobalModel.cow_txt = msg
-            } else {
-                GlobalModel.cow_txt = "Network error"
             }
             if (inputMessage.what == 3) {
                 val msg = inputMessage.obj.toString() //.take(30)
                 GlobalModel.dog_txt = msg
-            } else {
-                GlobalModel.dog_txt = "Network error"
             }
 
             //Setup AR
@@ -135,6 +146,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         dialogBuilder.setMessage(R.string.intro).setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> }).show()
 
 
+        getLocation()
+        vibrate(this)
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -177,6 +190,61 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
         setButtonsInvisible()
     }
+
+    @Suppress("DEPRECATION")
+    fun getLocation() {
+        val ctx = applicationContext
+        //important! set your user agent to prevent getting banned from the osm servers
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
+        //inflate layout after loading (to make sure that app can write to cache)
+
+        if ((Build.VERSION.SDK_INT >= 26 &&
+                    ContextCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED)) {
+            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION), 0)
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            fusedLocationClient.lastLocation.addOnSuccessListener { location : Location? ->
+                // Got last known location. In some rare situations this can be null.
+
+                val lat = location?.latitude
+                val long = location?.longitude
+                if (lat != null){
+                    val decimal = BigDecimal(lat).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    GlobalModel.latitude = decimal
+                    Toast.makeText(this, "decimal: $decimal", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Location Latitude fail", Toast.LENGTH_SHORT).show()
+                }
+                if (long != null){
+                    val decimal = BigDecimal(long).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    GlobalModel.longitude = decimal
+                    Toast.makeText(this, "decimal: $decimal", Toast.LENGTH_LONG).show()
+                }  else {
+                    Toast.makeText(this, "Location Longitude fail", Toast.LENGTH_SHORT).show()
+                }
+                Toast.makeText(this, "Position: ${GlobalModel.latitude}, ${GlobalModel.longitude}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.d("--debug--", "Location error")
+        }
+    }
+
+    private fun vibrate(context: Context) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            (context.getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(VibrationEffect.createOneShot(150, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            (context.getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(150)
+        }
+    }
+
+    override fun onLocationChanged(p0: Location?) {
+    }
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?)
+    {}
+    override fun onProviderEnabled(p0: String?) {}
+    override fun onProviderDisabled(p0: String?) {}
+
 
     fun setButtonsInvisible(){
         right_button.isClickable = false
@@ -490,16 +558,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
     }
 
-    fun node(node:TransformableNode,  value: Float) {
-        node.apply {
-                localRotation = Quaternion.axisAngle(
-                    Vector3(0.0f, 1.0f, 0.0f),
-                    180f + value
-                )
-        }
-        GlobalModel.bear_rotation = GlobalModel.bear_rotation + 20
-    }
-
     fun rotateLeft(node:TransformableNode, value: Float, animal: Int) {
         node.apply {
             localRotation = Quaternion.axisAngle(
@@ -609,6 +667,38 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 nameViewDog.setParent(anchorNode)
                 nameViewDog.renderable = animalName4
                 nameViewDog.select()
+
+                renderableNode.scaleController.isEnabled = false
+                renderableNode.rotationController.isEnabled = false
+                renderableNode.translationController.isEnabled = false
+
+                renderableNodeCat.scaleController.isEnabled = false
+                renderableNodeCat.rotationController.isEnabled = false
+                renderableNodeCat.translationController.isEnabled = false
+
+                renderableNodeCow.scaleController.isEnabled = false
+                renderableNodeCow.rotationController.isEnabled = false
+                renderableNodeCow.translationController.isEnabled = false
+
+                renderableNodeDog.scaleController.isEnabled = false
+                renderableNodeDog.rotationController.isEnabled = false
+                renderableNodeDog.translationController.isEnabled = false
+
+                nameViewBear.scaleController.isEnabled = false
+                nameViewBear.rotationController.isEnabled = false
+                nameViewBear.translationController.isEnabled = false
+
+                nameViewCat.scaleController.isEnabled = false
+                nameViewCat.rotationController.isEnabled = false
+                nameViewCat.translationController.isEnabled = false
+
+                nameViewCow.scaleController.isEnabled = false
+                nameViewCow.rotationController.isEnabled = false
+                nameViewCow.translationController.isEnabled = false
+
+                nameViewDog.scaleController.isEnabled = false
+                nameViewDog.rotationController.isEnabled = false
+                nameViewDog.translationController.isEnabled = false
 
                 setInvisible(renderableNode,renderableNodeCat)
                 setInvisible(nameViewCow,renderableNodeCow)
@@ -778,7 +868,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                     R.id.reindeer ->        selected = 11
                     R.id.wolverine ->       selected = 12
                 }
-                Log.d("asdf", "My animal is: $selected")
+                Log.d("selected", "My animal is: $selected")
             }
         }
     }
@@ -821,6 +911,9 @@ object GlobalModel {
     var cat_rotation = 180f
     var cow_rotation = 180f
     var dog_rotation = 180f
+
+    var latitude = 0.00
+    var longitude = 0.00
 }
 
 class Conn(mHand: Handler?) : Runnable {
