@@ -1,4 +1,5 @@
 package com.example.a3dfc
+
 import java.math.BigDecimal
 import java.math.RoundingMode
 import android.app.Activity
@@ -47,13 +48,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import org.osmdroid.config.Configuration
 
-
-class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener, LocationListener {
+class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener,
+    LocationListener {
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
     var selected: Int = 0 //Default value
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    // Ar object placeholders
     private lateinit var bearRendereable: ModelRenderable
     private lateinit var catRendereable: ModelRenderable
     private lateinit var cowRendereable: ModelRenderable
@@ -66,6 +68,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private lateinit var lionRendereable: ModelRenderable
     private lateinit var reindeerRendereable: ModelRenderable
     private lateinit var wolverineRendereable: ModelRenderable
+
+    // Ar TextView objects for info
     private lateinit var animalName: ViewRenderable
     private lateinit var animalName2: ViewRenderable
     private lateinit var animalName3: ViewRenderable
@@ -76,19 +80,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private lateinit var animalName8: ViewRenderable
     private lateinit var locationList: ViewRenderable
 
-
-    ///* Sensors ------------
+    // Sensors setup
     private lateinit var sensorManager: SensorManager
     private lateinit var mSensorManager: SensorManager
     private var mSensors: Sensor? = null
-    //*/ end of sensors ----------
 
-    // TODO add explanation of checklist to start
     // Name of the file which contains the visited places
     internal val FILENAME = "locationChecklist.txt"
 
     // Display the current list of visited places
     fun readChecklist() {
+        // Prevents crashing if file is empty
         openFileOutput(FILENAME, Context.MODE_APPEND).use { it.write("".toByteArray()) }
         GlobalModel.checklist_text = openFileInput(FILENAME)?.bufferedReader().use {
             it?.readText() ?: getString(R.string.cl_error)
@@ -96,21 +98,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         // TODO show the file
         Log.d("debug", "reads checklist here!")
     }
+
     // Write to visited places list after validation and add a timestamp
     fun writeChecklist(lon: Double, lat: Double) {
         val name = when {
-            lon in 26.51..26.99 && lat in 60.00..61.00-> "Location1"
-            lon in 26.00..26.50 && lat in 60.00..61.00-> "Location2"
-            lon in 25.51..25.99 && lat in 60.00..61.00-> "Location3"
-            lon in 25.00..25.50 && lat in 60.00..61.00-> "Location4"
-            lon in 24.51..24.99 && lat in 60.00..61.00-> "Myyrmäki"
-            lon in 24.00..24.50 && lat in 60.00..61.00-> "Location6"
-            lon in 23.51..23.99 && lat in 60.00..61.00-> "Location7"
-            lon in 23.00..23.50 && lat in 60.00..61.00-> "Location8"
-            lon in 22.51..22.99 && lat in 60.00..61.00-> "Location9"
-            lon in 22.00..22.50 && lat in 60.00..61.00-> "Location10"
-            lon in 21.51..21.99 && lat in 60.00..61.00-> "Location11"
-            lon in 21.00..21.50 && lat in 60.00..61.00-> "Location12"
+            lon in 26.51..26.99 && lat in 60.00..61.00 -> "Location1"
+            lon in 26.00..26.50 && lat in 60.00..61.00 -> "Location2"
+            lon in 25.51..25.99 && lat in 60.00..61.00 -> "Location3"
+            lon in 25.00..25.50 && lat in 60.00..61.00 -> "Location4"
+            lon in 24.51..24.99 && lat in 60.00..61.00 -> "Myyrmäki"
+            lon in 24.00..24.50 && lat in 60.00..61.00 -> "Location6"
+            lon in 23.51..23.99 && lat in 60.00..61.00 -> "Location7"
+            lon in 23.00..23.50 && lat in 60.00..61.00 -> "Location8"
+            lon in 22.51..22.99 && lat in 60.00..61.00 -> "Location9"
+            lon in 22.00..22.50 && lat in 60.00..61.00 -> "Location10"
+            lon in 21.51..21.99 && lat in 60.00..61.00 -> "Location11"
+            lon in 21.00..21.50 && lat in 60.00..61.00 -> "Location12"
             else -> return
         }
         val format = DateTimeFormatter.ofPattern("dd-MM-yyy")
@@ -126,6 +129,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     var tts: TextToSpeech? = null
     private val REQUEST_CODE_SPEECH_INPUT = 100
 
+    // Message handler for info from web
     private val mHandler: Handler = object :
         Handler(Looper.getMainLooper()) {
         override fun handleMessage(inputMessage: Message) {
@@ -169,25 +173,27 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             setClickListener()
             setupModel()
             arFragment?.setOnTapArPlaneListener { hitResult, _, _ ->
-
                 val anchor = hitResult.createAnchor()
                 val anchorNode = AnchorNode(anchor)
                 anchorNode.setParent(arFragment?.arSceneView?.scene)
-
                 createModel(anchorNode, selected)
             }
         }
     }
 
+    // On startup
     override fun onCreate(savedInstanceState: Bundle?) {
         tts = TextToSpeech(this, this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Phone location and permission
         getLocation()
-        // Initial run of checklist
+
+        // Initial run of previous location checklist
         readChecklist()
 
-        //Check internet connection
+        //Check internet connection(REQUIRED)
         if (isNetworkAvailable()) {
             val myRunnable = Conn(mHandler)
             val myThread = Thread(myRunnable)
@@ -204,16 +210,17 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         speak_button.setOnClickListener { SpeechFunction() }
         checklist_button.setOnClickListener { readChecklist() }
 
-        // DialogBox Intro --
+        // DialogBox Intro
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setCancelable(false)
         dialogBuilder.setMessage(R.string.intro)
             .setPositiveButton(R.string.intro_ok, DialogInterface.OnClickListener { dialog, id -> })
             .show()
 
-
+        // Startup vibration
         vibrate(this)
-        // Sensors--
+
+        // Sensor setup
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val deviceSensors: List<Sensor> = mSensorManager.getSensorList(Sensor.TYPE_ALL)
@@ -221,14 +228,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         deviceSensors.forEach {
             Log.v("Sensor name", "" + it)
         }
-
         if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null) {
             // You can register listener to get data and use them.
             Log.v("-----SUCCESS-----", "Gyroscope success")
         } else {
             Log.v("-----FAILURE-----", "No sensor found")
         }
-
         if (mSensors == null) {
             mSensors = if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null) {
                 sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
@@ -237,10 +242,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 null
             }
         }
-        //End of sensors--
 
+        // Text to speech button setup
         voice_button.setOnClickListener {
-
             if (selected == 1) {
                 val text = GlobalModel.bear_txt
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
@@ -250,20 +254,20 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             } else {
                 val text = "Place a animal model"
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-
             }
         }
+
+        // Sets all buttons invisible
         setButtonsInvisible()
     }
 
-
+    // Phone location and permission
     @Suppress("DEPRECATION")
     fun getLocation() {
         val ctx = applicationContext
         //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx))
         //inflate layout after loading (to make sure that app can write to cache)
-
         if ((Build.VERSION.SDK_INT >= 26 &&
                     ContextCompat.checkSelfPermission(
                         this,
@@ -279,31 +283,28 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
             fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
                 // Got last known location. In some rare situations this can be null.
-
                 val lat = location?.latitude
                 val long = location?.longitude
-
+                // Null check for location
                 if (long != null && lat != null) {
                     val decimalLat = BigDecimal(lat).setScale(2, RoundingMode.HALF_EVEN).toDouble()
                     GlobalModel.latitude = decimalLat
-
-                    val decimalLong = BigDecimal(long).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    val decimalLong =
+                        BigDecimal(long).setScale(2, RoundingMode.HALF_EVEN).toDouble()
                     GlobalModel.longitude = decimalLong
-
-                    //Toast.makeText(this, "latitude: ${GlobalModel.latitude}", Toast.LENGTH_LONG).show()
-                    //Toast.makeText(this, "longitude: ${GlobalModel.longitude}", Toast.LENGTH_LONG).show()
-
-                    writeChecklist(GlobalModel.longitude ,GlobalModel.latitude) //lon lat
+                    //Writes location to memory
+                    writeChecklist(GlobalModel.longitude, GlobalModel.latitude) //lon lat
                 } else {
-                    Toast.makeText(this, "Failed to get location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to get location", Toast.LENGTH_LONG).show()
                 }
-                //Toast.makeText(this, "Position: ${GlobalModel.latitude}, ${GlobalModel.longitude}", Toast.LENGTH_SHORT).show()
             }
         } else {
+            Toast.makeText(this, "Failed to get location", Toast.LENGTH_LONG).show()
             Log.d("--debug--", "Location error")
         }
     }
 
+    // Vibrates phone
     private fun vibrate(context: Context) {
         if (Build.VERSION.SDK_INT >= 26) {
             (context.getSystemService(VIBRATOR_SERVICE) as Vibrator).vibrate(
@@ -317,14 +318,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
-
+    // Location change
     override fun onLocationChanged(p0: Location?) {}
+
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
     override fun onProviderEnabled(p0: String?) {}
     override fun onProviderDisabled(p0: String?) {}
 
     // Sets buttons invisible at start
     fun setButtonsInvisible() {
+        // Buttons
         right_button.isClickable = false
         right_button.isVisible = false
         left_button.isClickable = false
@@ -336,40 +339,29 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         checklist_button.isVisible = false
         checklist_button.isClickable = false
         checklist_button.isVisible = false
-
+        // imageViews
         bear.isVisible = false
         bear.isClickable = false
-
         cat.isVisible = false
         cat.isClickable = false
-
         cow.isVisible = false
         cow.isClickable = false
-
         dog.isVisible = false
         dog.isClickable = false
-
         elephant.isVisible = false
         elephant.isClickable = false
-
         ferret.isVisible = false
         ferret.isClickable = false
-
         hippopotamus.isVisible = false
         hippopotamus.isClickable = false
-
         horse.isVisible = false
         horse.isClickable = false
-
         koala_bear.isVisible = false
         koala_bear.isClickable = false
-
         lion.isVisible = false
         lion.isClickable = false
-
         reindeer.isVisible = false
         reindeer.isClickable = false
-
         wolverine.isVisible = false
         wolverine.isClickable = false
     }
@@ -383,11 +375,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         super.onDestroy()
     }
 
+    // Sensor data
     override fun onSensorChanged(p0: SensorEvent?) {}
-    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-        Log.v("---onAccuracyChanged---", "onAccuracyChanged Started!!!!!]")
-    }
 
+    override fun onAccuracyChanged(p0: Sensor?, p1: Int) {}
     override fun onResume() {
         mSensorManager.registerListener(
             this,
@@ -404,10 +395,12 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         super.onPause()
     }
 
+    // Googles Speech to text function
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_SPEECH_INPUT) {
             if (resultCode == Activity.RESULT_OK || null != data) {
+                // !! required
                 val res: ArrayList<String> =
                     data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
                 textview.text = res[0]
@@ -455,7 +448,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                     .show()
             }
         }
-
+        // Warns user about AR reset
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setCancelable(false)
         dialogBuilder.setMessage(R.string.voice_error).setNegativeButton(
@@ -467,6 +460,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             .show()
     }
 
+    // Checks internet
     private fun isNetworkAvailable(): Boolean {
         val cm = this.getSystemService(
             Context.CONNECTIVITY_SERVICE
@@ -474,9 +468,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         return cm.activeNetworkInfo?.isConnected ?: false
     }
 
-
-    //----- old below
-
+    // Setup for all AR objects
     private fun setupModel() {
         ModelRenderable.builder()
             .setSource(this, R.raw.bear)
@@ -681,6 +673,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             .thenAccept { renderable -> locationList = renderable }
     }
 
+    // Rotates AR objects left
     fun rotateLeft(node: TransformableNode, value: Float, animal: Int) {
         node.apply {
             localRotation = Quaternion.axisAngle(
@@ -706,6 +699,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
+    // Rotates AR objects right
     fun rotateRight(node: TransformableNode, value: Float, animal: Int) {
         node.apply {
             localRotation = Quaternion.axisAngle(
@@ -731,13 +725,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
+    // Sets invisible AR objects visible
     fun setVisible(node1: TransformableNode) {
         if (node1.isEnabled == false) {
             node1.isEnabled = !node1.isEnabled
         }
-        //node1.isEnabled = node1.isEnabled
     }
 
+    // Sets visible AR objects invisible
     fun setInvisible(node1: TransformableNode, node2: TransformableNode) {
         if (node1.isEnabled == true) {
             node1.isEnabled = !node1.isEnabled
@@ -745,7 +740,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         if (node2.isEnabled == true) {
             node2.isEnabled = !node2.isEnabled
         }
-
     }
 
     // Loads the models and makes the UI visisble
@@ -1152,7 +1146,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
-
+    // imageView array
     private fun setArrayView() {
         arrayView = arrayOf(
             bear
@@ -1170,7 +1164,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         )
     }
 
-
+    // imageView setup
     private fun setClickListener() {
         for (view in arrayView!!) {
             view.setOnClickListener { thisView ->
@@ -1194,6 +1188,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
+    // imageView selection indication setup
     private fun setBackground(id: Int) {
         for (view in arrayView!!) {
             if (view.id == id) {
@@ -1204,113 +1199,116 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
+    // Text to speech setup
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             val result = tts!!.setLanguage(Locale.US)
-
-
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.d("asdf", "Lang error")
             } else {
                 voice_button.isEnabled = true
             }
-
         } else {
             Log.d("asdf", "Text to Speech init fail")
         }
     }
-// End of MainActivity
+}
 
-    object GlobalModel {
-        var position = 0 // for wiki texts
-        var speechText = "" // for speech to text placeholder
-        var bear_txt = ""
-        var cat_txt = ""
-        var cow_txt = ""
-        var dog_txt = ""
-        var elephant_txt = ""
-        var ferret_txt = ""
-        var hippopotamus_txt = ""
-        var horse_txt = ""
+// Fetches data from web
+class Conn(mHand: Handler?) : Runnable {
+    val myHandler = mHand
+    override fun run() {
+        try {
+            val resultBear = URL("https://users.metropolia.fi/~jaripie/karhu").readText()
+            Log.d("res", resultBear)
+            val msg = myHandler?.obtainMessage()
+            msg?.what = 0
+            msg?.obj = resultBear
+            myHandler?.sendMessage(msg)
 
-        var bear_rotation = 180f
-        var cat_rotation = 180f
-        var cow_rotation = 180f
-        var dog_rotation = 180f
-        var elephant_rotation = 180f
-        var ferret_rotation = 180f
-        var hippopotamus_rotation = 180f
-        var horse_rotation = 180f
+            val resultCat = URL("https://users.metropolia.fi/~jaripie/cat").readText()
+            Log.d("res", resultCat)
+            val msg2 = myHandler?.obtainMessage()
+            msg2?.what = 1
+            msg2?.obj = resultCat
+            myHandler?.sendMessage(msg2)
 
-        var latitude = 0.00
-        var longitude = 0.00
+            val resultCow = URL("https://users.metropolia.fi/~jaripie/cow").readText()
+            Log.d("res", resultCow)
+            val msg3 = myHandler?.obtainMessage()
+            msg3?.what = 2
+            msg3?.obj = resultCow
+            myHandler?.sendMessage(msg3)
 
-        var checklist_text = "No visited locations"
-    }
+            val resultDog = URL("https://users.metropolia.fi/~jaripie/dog").readText()
+            Log.d("res", resultDog)
+            val msg4 = myHandler?.obtainMessage()
+            msg4?.what = 3
+            msg4?.obj = resultDog
+            myHandler?.sendMessage(msg4)
 
-    class Conn(mHand: Handler?) : Runnable {
-        val myHandler = mHand
-        override fun run() {
-            try {
-                val resultBear = URL("https://users.metropolia.fi/~jaripie/karhu").readText()
-                Log.d("res", resultBear)
-                val msg = myHandler?.obtainMessage()
-                msg?.what = 0
-                msg?.obj = resultBear
-                myHandler?.sendMessage(msg)
+            val resultElephant = URL("https://users.metropolia.fi/~jaripie/elephant").readText()
+            Log.d("res", resultElephant)
+            val msg5 = myHandler?.obtainMessage()
+            msg5?.what = 4
+            msg5?.obj = resultElephant
+            myHandler?.sendMessage(msg5)
 
-                val resultCat = URL("https://users.metropolia.fi/~jaripie/cat").readText()
-                Log.d("res", resultCat)
-                val msg2 = myHandler?.obtainMessage()
-                msg2?.what = 1
-                msg2?.obj = resultCat
-                myHandler?.sendMessage(msg2)
+            val resultFerret = URL("https://users.metropolia.fi/~jaripie/lion").readText()
+            Log.d("res", resultFerret)
+            val msg6 = myHandler?.obtainMessage()
+            msg6?.what = 5
+            msg6?.obj = resultFerret
+            myHandler?.sendMessage(msg6)
 
-                val resultCow = URL("https://users.metropolia.fi/~jaripie/cow").readText()
-                Log.d("res", resultCow)
-                val msg3 = myHandler?.obtainMessage()
-                msg3?.what = 2
-                msg3?.obj = resultCow
-                myHandler?.sendMessage(msg3)
+            val resultHippopotamus =
+                URL("https://users.metropolia.fi/~jaripie/wolverine").readText()
+            Log.d("res", resultHippopotamus)
+            val msg7 = myHandler?.obtainMessage()
+            msg7?.what = 6
+            msg7?.obj = resultHippopotamus
+            myHandler?.sendMessage(msg7)
 
-                val resultDog = URL("https://users.metropolia.fi/~jaripie/dog").readText()
-                Log.d("res", resultDog)
-                val msg4 = myHandler?.obtainMessage()
-                msg4?.what = 3
-                msg4?.obj = resultDog
-                myHandler?.sendMessage(msg4)
+            val resultHorse = URL("https://users.metropolia.fi/~jaripie/reindeer").readText()
+            Log.d("res", resultHorse)
+            val msg8 = myHandler?.obtainMessage()
+            msg8?.what = 7
+            msg8?.obj = resultHorse
+            myHandler?.sendMessage(msg8)
 
-                val resultElephant = URL("https://users.metropolia.fi/~jaripie/elephant").readText()
-                Log.d("res", resultElephant)
-                val msg5 = myHandler?.obtainMessage()
-                msg5?.what = 4
-                msg5?.obj = resultElephant
-                myHandler?.sendMessage(msg5)
-
-                val resultFerret = URL("https://users.metropolia.fi/~jaripie/lion").readText()
-                Log.d("res", resultFerret)
-                val msg6 = myHandler?.obtainMessage()
-                msg6?.what = 5
-                msg6?.obj = resultFerret
-                myHandler?.sendMessage(msg6)
-
-                val resultHippopotamus = URL("https://users.metropolia.fi/~jaripie/wolverine").readText()
-                Log.d("res", resultHippopotamus)
-                val msg7 = myHandler?.obtainMessage()
-                msg7?.what = 6
-                msg7?.obj = resultHippopotamus
-                myHandler?.sendMessage(msg7)
-
-                val resultHorse = URL("https://users.metropolia.fi/~jaripie/reindeer").readText()
-                Log.d("res", resultHorse)
-                val msg8 = myHandler?.obtainMessage()
-                msg8?.what = 7
-                msg8?.obj = resultHorse
-                myHandler?.sendMessage(msg8)
-
-            } catch (e: Exception) {
-                Log.d("Error", e.toString())
-            }
+        } catch (e: Exception) {
+            Log.d("Error", e.toString())
         }
     }
+}
+
+// Global objects usable anywhere
+object GlobalModel {
+    // For wiki texts
+    var position = 0
+    // For speech to text placeholder
+    var speechText = ""
+    // For animal wiki info
+    var bear_txt = ""
+    var cat_txt = ""
+    var cow_txt = ""
+    var dog_txt = ""
+    var elephant_txt = ""
+    var ferret_txt = ""
+    var hippopotamus_txt = ""
+    var horse_txt = ""
+    // Default AR object rotation
+    var bear_rotation = 180f
+    var cat_rotation = 180f
+    var cow_rotation = 180f
+    var dog_rotation = 180f
+    var elephant_rotation = 180f
+    var ferret_rotation = 180f
+    var hippopotamus_rotation = 180f
+    var horse_rotation = 180f
+    // Default location
+    var latitude = 0.00
+    var longitude = 0.00
+    // Default visited location list
+    var checklist_text = "No visited locations"
 }
