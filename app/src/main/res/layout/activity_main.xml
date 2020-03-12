@@ -103,7 +103,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginEnd="28dp"
-            android:layout_marginBottom="140dp"
+            android:layout_marginBottom="150dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
             android:contentDescription="@string/rb_desc"
@@ -118,7 +118,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="28dp"
-            android:layout_marginBottom="140dp"
+            android:layout_marginBottom="150dp"
             android:background="@drawable/round_button"
             android:padding="12dp"
             android:contentDescription="@string/lb_desc"
@@ -130,18 +130,18 @@
 
         <Button
             android:id="@+id/speak_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="161dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginEnd="28dp"
-            android:layout_marginBottom="360dp"
+            android:layout_marginBottom="350dp"
+            android:padding="12dp"
+            android:textSize="20sp"
+            android:background="@drawable/round_button"
+            android:contentDescription="@string/sb_desc"
             android:text="@string/speak_button"
             android:textColor="@color/black"
-
-            android:contentDescription="@string/sb_desc"
-            app:layout_constraintBottom_toTopOf="@+id/textview"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
