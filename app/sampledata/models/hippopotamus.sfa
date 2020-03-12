@@ -56,7 +56,7 @@
     file: 'sampledata/models/hippopotamus.fbx',
     name: 'hippopotamus',
     recenter: 'root',
-    scale: 5.1970499999999999,
+    scale: 150.00,
   },
   samplers: [
     {

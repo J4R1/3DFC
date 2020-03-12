@@ -52,6 +52,8 @@
     <!-- Intro text -->
     <string name="intro">Welcome to 3D Fauna Center!\n\nIn this virtual museum you can view different animals in their actual sizes and read short information packets on them.\n\nTo start, slowly wave your phone over a flat surface until a matrix of white dots appear, then just select any of the available animals to start learning.\n\n You can also view a list of your visited locations from the top-left button.</string>
     <string name="intro_ok">I understand!</string>
+    <string name="voice_ok">Cancel</string>
+
 
     <!-- Error messages -->
     <string name="voice_error">Currently voice input forces a restart of ARCore</string>
