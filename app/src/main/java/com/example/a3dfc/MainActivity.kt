@@ -3,7 +3,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -29,7 +28,6 @@ import com.google.ar.sceneform.ux.TransformableNode
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.TextView
 import androidx.core.view.isVisible
-import com.google.ar.core.Session
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
@@ -41,19 +39,16 @@ import java.util.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Build
 import android.preference.PreferenceManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import org.osmdroid.config.Configuration
 
 
 class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnInitListener, LocationListener {
-
     var arrayView: Array<View>? = null
     private var arFragment: ArFragment? = null
     var selected: Int = 0 //Default value
@@ -75,6 +70,11 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
     private lateinit var animalName2: ViewRenderable
     private lateinit var animalName3: ViewRenderable
     private lateinit var animalName4: ViewRenderable
+    private lateinit var animalName5: ViewRenderable
+    private lateinit var animalName6: ViewRenderable
+    private lateinit var animalName7: ViewRenderable
+    private lateinit var animalName8: ViewRenderable
+    private lateinit var locationList: ViewRenderable
 
 
     ///* Sensors ------------
@@ -89,23 +89,32 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
     // Display the current list of visited places
     fun readChecklist() {
-        openFileOutput(FILENAME, Context.MODE_APPEND).use { it.write("ALSJDKJALFSJFKLASJD".toByteArray()) }
+        openFileOutput(FILENAME, Context.MODE_APPEND).use { it.write("".toByteArray()) }
         GlobalModel.checklist_text = openFileInput(FILENAME)?.bufferedReader().use {
             it?.readText() ?: getString(R.string.cl_error)
         }
         // TODO show the file
         Log.d("debug", "reads checklist here!")
     }
-
     // Write to visited places list after validation and add a timestamp
     fun writeChecklist(lon: Double, lat: Double) {
-        var name = when {
-            lon == 60.00 && lat == 60.00 -> "Leppävaara"
-            lon == 50.00 && lat == 50.00 -> "Keskusta"
+        val name = when {
+            lon in 26.51..26.99 && lat in 60.00..61.00-> "Location1"
+            lon in 26.00..26.50 && lat in 60.00..61.00-> "Location2"
+            lon in 25.51..25.99 && lat in 60.00..61.00-> "Location3"
+            lon in 25.00..25.50 && lat in 60.00..61.00-> "Location4"
+            lon in 24.51..24.99 && lat in 60.00..61.00-> "Myyrmäki"
+            lon in 24.00..24.50 && lat in 60.00..61.00-> "Location6"
+            lon in 23.51..23.99 && lat in 60.00..61.00-> "Location7"
+            lon in 23.00..23.50 && lat in 60.00..61.00-> "Location8"
+            lon in 22.51..22.99 && lat in 60.00..61.00-> "Location9"
+            lon in 22.00..22.50 && lat in 60.00..61.00-> "Location10"
+            lon in 21.51..21.99 && lat in 60.00..61.00-> "Location11"
+            lon in 21.00..21.50 && lat in 60.00..61.00-> "Location12"
             else -> return
         }
         val format = DateTimeFormatter.ofPattern("dd-MM-yyy")
-        var date = LocalDate.now().format(format)
+        val date = LocalDate.now().format(format)
         Log.d("debug", "Date is $date")
         openFileOutput(FILENAME, Context.MODE_APPEND).use {
             it.write("You visited $name on $date\n".toByteArray())
@@ -121,21 +130,36 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         Handler(Looper.getMainLooper()) {
         override fun handleMessage(inputMessage: Message) {
             if (inputMessage.what == 0) {
-                val msg = inputMessage.obj.toString() //.take(30)
-                //textviewfetch.text = msg //inputMessage.obj.toString()
+                val msg = inputMessage.obj.toString()
                 GlobalModel.bear_txt = msg
             }
             if (inputMessage.what == 1) {
-                val msg = inputMessage.obj.toString() //.take(30)
+                val msg = inputMessage.obj.toString()
                 GlobalModel.cat_txt = msg
             }
             if (inputMessage.what == 2) {
-                val msg = inputMessage.obj.toString() //.take(30)
+                val msg = inputMessage.obj.toString()
                 GlobalModel.cow_txt = msg
             }
             if (inputMessage.what == 3) {
-                val msg = inputMessage.obj.toString() //.take(30)
+                val msg = inputMessage.obj.toString()
                 GlobalModel.dog_txt = msg
+            }
+            if (inputMessage.what == 4) {
+                val msg = inputMessage.obj.toString()
+                GlobalModel.elephant_txt = msg
+            }
+            if (inputMessage.what == 5) {
+                val msg = inputMessage.obj.toString()
+                GlobalModel.ferret_txt = msg
+            }
+            if (inputMessage.what == 6) {
+                val msg = inputMessage.obj.toString()
+                GlobalModel.hippopotamus_txt = msg
+            }
+            if (inputMessage.what == 7) {
+                val msg = inputMessage.obj.toString()
+                GlobalModel.horse_txt = msg
             }
 
             //Setup AR
@@ -159,6 +183,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         tts = TextToSpeech(this, this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        getLocation()
         // Initial run of checklist
         readChecklist()
 
@@ -187,7 +212,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             .show()
 
 
-        getLocation()
         vibrate(this)
         // Sensors--
         this.sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -258,25 +282,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
                 val lat = location?.latitude
                 val long = location?.longitude
-                if (lat != null) {
-                    val decimal = BigDecimal(lat).setScale(2, RoundingMode.HALF_EVEN).toDouble()
-                    GlobalModel.latitude = decimal
-                    Toast.makeText(this, "decimal: $decimal", Toast.LENGTH_LONG).show()
+
+                if (long != null && lat != null) {
+                    val decimalLat = BigDecimal(lat).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    GlobalModel.latitude = decimalLat
+
+                    val decimalLong = BigDecimal(long).setScale(2, RoundingMode.HALF_EVEN).toDouble()
+                    GlobalModel.longitude = decimalLong
+
+                    //Toast.makeText(this, "latitude: ${GlobalModel.latitude}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this, "longitude: ${GlobalModel.longitude}", Toast.LENGTH_LONG).show()
+
+                    writeChecklist(GlobalModel.longitude ,GlobalModel.latitude) //lon lat
                 } else {
-                    Toast.makeText(this, "Location Latitude fail", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Failed to get location", Toast.LENGTH_SHORT).show()
                 }
-                if (long != null) {
-                    val decimal = BigDecimal(long).setScale(2, RoundingMode.HALF_EVEN).toDouble()
-                    GlobalModel.longitude = decimal
-                    Toast.makeText(this, "decimal: $decimal", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(this, "Location Longitude fail", Toast.LENGTH_SHORT).show()
-                }
-                Toast.makeText(
-                    this,
-                    "Position: ${GlobalModel.latitude}, ${GlobalModel.longitude}",
-                    Toast.LENGTH_SHORT
-                ).show()
+                //Toast.makeText(this, "Position: ${GlobalModel.latitude}, ${GlobalModel.longitude}", Toast.LENGTH_SHORT).show()
             }
         } else {
             Log.d("--debug--", "Location error")
@@ -296,27 +317,13 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         }
     }
 
-    fun createLocationRequest() {
-        Log.d("--GG--", "createLocationRequest() started")
 
-        val locationRequest = LocationRequest.create()?.apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-        val locRequest = locationRequest.toString()
-        Log.d("--HH--", locRequest)
-    }
-
-    override fun onLocationChanged(p0: Location?) {
-        //new location react...
-    }
-
+    override fun onLocationChanged(p0: Location?) {}
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
     override fun onProviderEnabled(p0: String?) {}
     override fun onProviderDisabled(p0: String?) {}
 
-
+    // Sets buttons invisible at start
     fun setButtonsInvisible() {
         right_button.isClickable = false
         right_button.isVisible = false
@@ -328,6 +335,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         speak_button.isClickable = false
         checklist_button.isVisible = false
         checklist_button.isClickable = false
+        checklist_button.isVisible = false
 
         bear.isVisible = false
         bear.isClickable = false
@@ -366,6 +374,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         wolverine.isClickable = false
     }
 
+    // Stops Text to speech
     override fun onDestroy() {
         if (tts != null) {
             tts!!.stop()
@@ -374,44 +383,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         super.onDestroy()
     }
 
-    override fun onSensorChanged(p0: SensorEvent?) {
-        /*
-        Log.v("----onSensorChanged----","p0!!.values[0]")
-        //Sensor change value
-        val data = p0!!.values[0]
-        val data2 = p0.values[1]
-        val data3 = p0.values[2]
-
-        val x = "%.4f".format(data)
-        val y = "%.4f".format(data2)
-        val z = "%.4f".format(data3)
-
-        val r = 1
-        val g = 1
-        val b = 1
-
-        //val red = r*data
-        //val green = g*data2
-        val blue = b*data3
-        sensor.text = ("r: $x   g: $y   b: $z")
-
-        if (blue > 3) {
-            direction.text = "left"
-        } else if (blue < -3) {
-            direction.text = "right"
-        }
-
-        if (p0.sensor.type == Sensor.TYPE_GYROSCOPE) {
-            Log.v("----Sensor data----","$data")
-            Log.v("----Sensor data----","$data2")
-            Log.v("----Sensor data----","$data3")
-        } else {
-            Log.v("-----FAILURE-----","No sensor data")
-            Toast.makeText(this, "#####FAIL #####", Toast.LENGTH_SHORT).show()
-        }*/
-
-    }
-
+    override fun onSensorChanged(p0: SensorEvent?) {}
     override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
         Log.v("---onAccuracyChanged---", "onAccuracyChanged Started!!!!!]")
     }
@@ -422,8 +394,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             mSensors,
             999999998,
             999999999
-        )//SensorManager.SENSOR_DELAY_NORMAL
-        //        Register the sensor on resume of the activity
+        )
         super.onResume()
     }
 
@@ -488,7 +459,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         val dialogBuilder = AlertDialog.Builder(this)
         dialogBuilder.setCancelable(false)
         dialogBuilder.setMessage(R.string.voice_error).setNegativeButton(
-            R.string.intro_ok,
+            R.string.voice_ok,
             DialogInterface.OnClickListener { dialog, id -> })
             .setPositiveButton(
                 R.string.voice_anyway,
@@ -654,6 +625,60 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             .setView(this, view4)
             .build()
             .thenAccept { renderable -> animalName4 = renderable }
+
+        val inflater6: LayoutInflater = LayoutInflater.from(applicationContext)
+        val view6 = inflater6.inflate(R.layout.name_animal5, root_layout, false)
+        val textView6: TextView = view6?.findViewById(R.id.nameAnimal5) as TextView
+        textView6.text = GlobalModel.elephant_txt
+
+        ViewRenderable.builder()
+            .setView(this, view6)
+            .build()
+            .thenAccept { renderable -> animalName5 = renderable }
+
+        val inflater7: LayoutInflater = LayoutInflater.from(applicationContext)
+        val view7 = inflater7.inflate(R.layout.name_animal6, root_layout, false)
+        val textView7: TextView = view7?.findViewById(R.id.nameAnimal6) as TextView
+        textView7.text = GlobalModel.ferret_txt
+
+        ViewRenderable.builder()
+            .setView(this, view7)
+            .build()
+            .thenAccept { renderable -> animalName6 = renderable }
+
+        val inflater8: LayoutInflater = LayoutInflater.from(applicationContext)
+        val view8 = inflater8.inflate(R.layout.name_animal7, root_layout, false)
+        val textView8: TextView = view8?.findViewById(R.id.nameAnimal7) as TextView
+        textView8.text = GlobalModel.hippopotamus_txt
+
+        ViewRenderable.builder()
+            .setView(this, view8)
+            .build()
+            .thenAccept { renderable -> animalName7 = renderable }
+
+        val inflater9: LayoutInflater = LayoutInflater.from(applicationContext)
+        val view9 = inflater9.inflate(R.layout.name_animal8, root_layout, false)
+        val textView9: TextView = view9?.findViewById(R.id.nameAnimal8) as TextView
+        textView9.text = GlobalModel.dog_txt
+
+        ViewRenderable.builder()
+            .setView(this, view9)
+            .build()
+            .thenAccept { renderable -> animalName8 = renderable }
+
+        val inflater5: LayoutInflater = LayoutInflater.from(applicationContext)
+        val view5 = inflater5.inflate(R.layout.location_list, root_layout, false)
+        val textView5: TextView = view5?.findViewById(R.id.checklist_text) as TextView
+        if (GlobalModel.checklist_text.length <= 5) {
+            textView5.text = "You haven't visited any sites"
+        } else {
+            textView5.text = GlobalModel.checklist_text
+        }
+
+        ViewRenderable.builder()
+            .setView(this, view5)
+            .build()
+            .thenAccept { renderable -> locationList = renderable }
     }
 
     fun rotateLeft(node: TransformableNode, value: Float, animal: Int) {
@@ -670,6 +695,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             GlobalModel.cow_rotation = GlobalModel.cow_rotation - 20
         } else if (animal == 4) {
             GlobalModel.dog_rotation = GlobalModel.dog_rotation - 20
+        } else if (animal == 5) {
+            GlobalModel.elephant_rotation = GlobalModel.elephant_rotation - 20
+        } else if (animal == 6) {
+            GlobalModel.ferret_rotation = GlobalModel.ferret_rotation - 20
+        } else if (animal == 7) {
+            GlobalModel.hippopotamus_rotation = GlobalModel.hippopotamus_rotation - 20
+        } else if (animal == 8) {
+            GlobalModel.horse_rotation = GlobalModel.horse_rotation - 20
         }
     }
 
@@ -687,6 +720,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             GlobalModel.cow_rotation = GlobalModel.cow_rotation + 20
         } else if (animal == 4) {
             GlobalModel.dog_rotation = GlobalModel.dog_rotation + 20
+        } else if (animal == 5) {
+            GlobalModel.elephant_rotation = GlobalModel.elephant_rotation + 20
+        } else if (animal == 6) {
+            GlobalModel.ferret_rotation = GlobalModel.ferret_rotation + 20
+        } else if (animal == 7) {
+            GlobalModel.hippopotamus_rotation = GlobalModel.hippopotamus_rotation + 20
+        } else if (animal == 8) {
+            GlobalModel.horse_rotation = GlobalModel.horse_rotation + 20
         }
     }
 
@@ -707,19 +748,21 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
     }
 
-
     // Loads the models and makes the UI visisble
     private fun createModel(anchorNode: AnchorNode, selected: Int) {
         val nameViewBear = TransformableNode(arFragment?.transformationSystem)
         val nameViewCat = TransformableNode(arFragment?.transformationSystem)
         val nameViewCow = TransformableNode(arFragment?.transformationSystem)
         val nameViewDog = TransformableNode(arFragment?.transformationSystem)
+        val nameViewElephant = TransformableNode(arFragment?.transformationSystem)
+        val nameViewFerret = TransformableNode(arFragment?.transformationSystem)
+        val nameViewHippopotamus = TransformableNode(arFragment?.transformationSystem)
+        val nameViewHorse = TransformableNode(arFragment?.transformationSystem)
+        val locationNode = TransformableNode(arFragment?.transformationSystem)
         val renderableNode = TransformableNode(arFragment?.transformationSystem)
         renderableNode.localPosition = Vector3(0f, 0f, 0f)
         renderableNode.localRotation =
             Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.bear_rotation)
-        //renderableNode.scaleController.minScale  = 100f
-        //renderableNode.scaleController.maxScale = 200f
         renderableNode.setParent(anchorNode)
         val renderableNodeCat = TransformableNode(arFragment?.transformationSystem)
         renderableNodeCat.localPosition = Vector3(0f, 0f, 0f)
@@ -736,6 +779,26 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         renderableNodeDog.localRotation =
             Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.dog_rotation)
         renderableNodeDog.setParent(anchorNode)
+        val renderableNodeElephant = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeElephant.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeElephant.localRotation =
+            Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.elephant_rotation)
+        renderableNodeElephant.setParent(anchorNode)
+        val renderableNodeFerret = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeFerret.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeFerret.localRotation =
+            Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.ferret_rotation)
+        renderableNodeFerret.setParent(anchorNode)
+        val renderableNodeHippopotamus = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeHippopotamus.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeHippopotamus.localRotation =
+            Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.hippopotamus_rotation)
+        renderableNodeHippopotamus.setParent(anchorNode)
+        val renderableNodeHorse = TransformableNode(arFragment?.transformationSystem)
+        renderableNodeHorse.localPosition = Vector3(0f, 0f, 0f)
+        renderableNodeHorse.localRotation =
+            Quaternion.axisAngle(Vector3(0f, 1f, 0f), GlobalModel.horse_rotation)
+        renderableNodeHorse.setParent(anchorNode)
         right_button.setOnClickListener {
             Toast.makeText(
                 applicationContext,
@@ -761,6 +824,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 renderableNodeCow.select()
                 renderableNodeDog.renderable = dogRendereable
                 renderableNodeDog.select()
+                renderableNodeElephant.renderable = elephantRendereable
+                renderableNodeElephant.select()
+                renderableNodeFerret.renderable = ferretRendereable
+                renderableNodeFerret.select()
+                renderableNodeHippopotamus.renderable = hippopotamusRendereable
+                renderableNodeHippopotamus.select()
+                renderableNodeHorse.renderable = horseRendereable
+                renderableNodeHorse.select()
 
                 nameViewBear.localPosition =
                     Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
@@ -786,6 +857,36 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 nameViewDog.renderable = animalName4
                 nameViewDog.select()
 
+                nameViewElephant.localPosition =
+                    Vector3(0f, renderableNode.localPosition.y + 1.5f, 0f)
+                nameViewElephant.setParent(anchorNode)
+                nameViewElephant.renderable = animalName5
+                nameViewElephant.select()
+
+                nameViewFerret.localPosition =
+                    Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewFerret.setParent(anchorNode)
+                nameViewFerret.renderable = animalName6
+                nameViewFerret.select()
+
+                nameViewHippopotamus.localPosition =
+                    Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewHippopotamus.setParent(anchorNode)
+                nameViewHippopotamus.renderable = animalName7
+                nameViewHippopotamus.select()
+
+                nameViewHorse.localPosition =
+                    Vector3(0f, renderableNode.localPosition.y + 1.0f, 0f)
+                nameViewHorse.setParent(anchorNode)
+                nameViewHorse.renderable = animalName8
+                nameViewHorse.select()
+
+                locationNode.localPosition =
+                    Vector3(1.0f, 0f, 0f)
+                locationNode.setParent(anchorNode)
+                locationNode.renderable = locationList
+                locationNode.select()
+
                 renderableNode.scaleController.isEnabled = false
                 renderableNode.rotationController.isEnabled = false
                 renderableNode.translationController.isEnabled = false
@@ -801,6 +902,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 renderableNodeDog.scaleController.isEnabled = false
                 renderableNodeDog.rotationController.isEnabled = false
                 renderableNodeDog.translationController.isEnabled = false
+
+                renderableNodeElephant.scaleController.isEnabled = false
+                renderableNodeElephant.rotationController.isEnabled = false
+                renderableNodeElephant.translationController.isEnabled = false
+
+                renderableNodeFerret.scaleController.isEnabled = false
+                renderableNodeFerret.rotationController.isEnabled = false
+                renderableNodeFerret.translationController.isEnabled = false
+
+                renderableNodeHippopotamus.scaleController.isEnabled = false
+                renderableNodeHippopotamus.rotationController.isEnabled = false
+                renderableNodeHippopotamus.translationController.isEnabled = false
+
+                renderableNodeHorse.scaleController.isEnabled = false
+                renderableNodeHorse.rotationController.isEnabled = false
+                renderableNodeHorse.translationController.isEnabled = false
 
                 nameViewBear.scaleController.isEnabled = false
                 nameViewBear.rotationController.isEnabled = false
@@ -818,10 +935,35 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 nameViewDog.rotationController.isEnabled = false
                 nameViewDog.translationController.isEnabled = false
 
+                nameViewElephant.scaleController.isEnabled = false
+                nameViewElephant.rotationController.isEnabled = false
+                nameViewElephant.translationController.isEnabled = false
+
+                nameViewFerret.scaleController.isEnabled = false
+                nameViewFerret.rotationController.isEnabled = false
+                nameViewFerret.translationController.isEnabled = false
+
+                nameViewHippopotamus.scaleController.isEnabled = false
+                nameViewHippopotamus.rotationController.isEnabled = false
+                nameViewHippopotamus.translationController.isEnabled = false
+
+                nameViewHorse.scaleController.isEnabled = false
+                nameViewHorse.rotationController.isEnabled = false
+                nameViewHorse.translationController.isEnabled = false
+
+                locationNode.scaleController.isEnabled = false
+                locationNode.rotationController.isEnabled = false
+                locationNode.translationController.isEnabled = false
+
                 setInvisible(renderableNode, renderableNodeCat)
                 setInvisible(nameViewCow, renderableNodeCow)
                 setInvisible(nameViewCat, nameViewBear)
+                setInvisible(nameViewElephant, nameViewFerret)
+                setInvisible(nameViewHippopotamus, nameViewHorse)
                 setInvisible(nameViewDog, renderableNodeDog)
+                setInvisible(renderableNodeElephant, renderableNodeFerret)
+                setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+
                 right_button.isClickable = true
                 right_button.isVisible = true
                 left_button.isClickable = true
@@ -830,8 +972,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 voice_button.isClickable = true
                 speak_button.isVisible = true
                 speak_button.isClickable = true
-                checklist_button.isVisible = true
-                checklist_button.isClickable = true
+                checklist_button.isVisible = false
+                checklist_button.isClickable = false
 
                 bear.isVisible = true
                 bear.isClickable = true
@@ -844,53 +986,18 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
 
                 dog.isVisible = true
                 dog.isClickable = true
-            }
-            1 -> {
-            }
-            2 -> {
-            }
-            3 -> {
-                /*
-                renderableNode.renderable = cowRendereable
-                renderableNode.select()*/
-            }
-            4 -> {
-                /*
-                renderableNode.renderable = dogRendereable
-                renderableNode.select()
-                */
-            }
-            5 -> {
-                renderableNode.renderable = elephantRendereable
-                renderableNode.select()
-            }
-            6 -> {
-                renderableNode.renderable = ferretRendereable
-                renderableNode.select()
-            }
-            7 -> {
-                renderableNode.renderable = ferretRendereable
-                renderableNode.select()
-            }
-            8 -> {
-                renderableNode.renderable = ferretRendereable
-                renderableNode.select()
-            }
-            9 -> {
-                renderableNode.renderable = ferretRendereable
-                renderableNode.select()
-            }
-            10 -> {
-                renderableNode.renderable = ferretRendereable
-                renderableNode.select()
-            }
-            11 -> {
-                renderableNode.renderable = reindeerRendereable
-                renderableNode.select()
-            }
-            12 -> {
-                renderableNode.renderable = wolverineRendereable
-                renderableNode.select()
+
+                elephant.isVisible = true
+                elephant.isClickable = true
+
+                ferret.isVisible = true
+                ferret.isClickable = true
+
+                hippopotamus.isVisible = true
+                hippopotamus.isClickable = true
+
+                horse.isVisible = true
+                horse.isClickable = true
             }
         }
         bear.setOnClickListener {
@@ -898,6 +1005,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             setInvisible(renderableNodeCat, renderableNodeCow)
             setInvisible(nameViewCat, nameViewCow)
             setInvisible(renderableNodeDog, nameViewDog)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
             setVisible(renderableNode)
             setVisible(nameViewBear)
             right_button.setOnClickListener {
@@ -913,6 +1024,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             setInvisible(renderableNode, renderableNodeCow)
             setInvisible(nameViewBear, nameViewCow)
             setInvisible(renderableNodeDog, nameViewDog)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
             setVisible(renderableNodeCat)
             setVisible(nameViewCat)
             right_button.setOnClickListener {
@@ -927,6 +1042,10 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             setInvisible(renderableNodeCat, renderableNode)
             setInvisible(nameViewBear, nameViewCat)
             setInvisible(renderableNodeDog, nameViewDog)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
             setVisible(renderableNodeCow)
             setVisible(nameViewCow)
             right_button.setOnClickListener {
@@ -937,10 +1056,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             }
         }
         dog.setOnClickListener {
-            this.selected = 4
+            this.selected = 3
             setInvisible(renderableNodeCat, renderableNode)
             setInvisible(nameViewBear, nameViewCat)
             setInvisible(renderableNodeCow, nameViewCow)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
             setVisible(renderableNodeDog)
             setVisible(nameViewDog)
             right_button.setOnClickListener {
@@ -948,6 +1071,83 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             }
             left_button.setOnClickListener {
                 rotateLeft(renderableNodeDog, GlobalModel.dog_rotation, 4)
+            }
+        }
+
+        elephant.setOnClickListener {
+            this.selected = 5
+            setInvisible(renderableNodeCat, renderableNode)
+            setInvisible(nameViewBear, nameViewCat)
+            setInvisible(renderableNodeCow, nameViewCow)
+            setInvisible(renderableNodeDog, nameViewDog)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewDog, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
+            setInvisible(renderableNode, renderableNodeFerret)
+            setVisible(renderableNodeElephant)
+            setVisible(nameViewElephant)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeElephant, GlobalModel.elephant_rotation, 5)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeElephant, GlobalModel.elephant_rotation, 5)
+            }
+        }
+
+        ferret.setOnClickListener {
+            this.selected = 6
+            setInvisible(renderableNodeCat, renderableNode)
+            setInvisible(nameViewBear, nameViewCat)
+            setInvisible(renderableNodeCow, nameViewCow)
+            setInvisible(renderableNodeElephant, renderableNode)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewDog)
+            setInvisible(nameViewHippopotamus, nameViewHorse)
+            setVisible(renderableNodeFerret)
+            setVisible(nameViewFerret)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeFerret, GlobalModel.ferret_rotation, 6)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeFerret, GlobalModel.ferret_rotation, 6)
+            }
+        }
+
+        hippopotamus.setOnClickListener {
+            this.selected = 7
+            setInvisible(renderableNodeCat, renderableNode)
+            setInvisible(nameViewBear, nameViewCat)
+            setInvisible(renderableNodeCow, nameViewCow)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewCat, nameViewHorse)
+            setInvisible(renderableNode, renderableNodeHorse)
+            setVisible(renderableNodeHippopotamus)
+            setVisible(nameViewHippopotamus)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeHippopotamus, GlobalModel.hippopotamus_rotation, 7)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeHippopotamus, GlobalModel.hippopotamus_rotation, 7)
+            }
+        }
+
+        horse.setOnClickListener {
+            this.selected = 8
+            setInvisible(renderableNodeCat, renderableNode)
+            setInvisible(nameViewBear, nameViewCat)
+            setInvisible(renderableNodeCow, nameViewCow)
+            setInvisible(renderableNodeElephant, renderableNodeFerret)
+            setInvisible(renderableNodeHippopotamus, renderableNodeHorse)
+            setInvisible(nameViewElephant, nameViewFerret)
+            setInvisible(nameViewHippopotamus, nameViewElephant)
+            setVisible(renderableNodeHorse)
+            setVisible(nameViewHorse)
+            right_button.setOnClickListener {
+                rotateRight(renderableNodeHorse, GlobalModel.horse_rotation, 8)
+            }
+            left_button.setOnClickListener {
+                rotateLeft(renderableNodeHorse, GlobalModel.horse_rotation, 8)
             }
         }
     }
@@ -1028,16 +1228,24 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         var cat_txt = ""
         var cow_txt = ""
         var dog_txt = ""
+        var elephant_txt = ""
+        var ferret_txt = ""
+        var hippopotamus_txt = ""
+        var horse_txt = ""
 
         var bear_rotation = 180f
         var cat_rotation = 180f
         var cow_rotation = 180f
         var dog_rotation = 180f
+        var elephant_rotation = 180f
+        var ferret_rotation = 180f
+        var hippopotamus_rotation = 180f
+        var horse_rotation = 180f
 
         var latitude = 0.00
         var longitude = 0.00
 
-        var checklist_text = ""
+        var checklist_text = "No visited locations"
     }
 
     class Conn(mHand: Handler?) : Runnable {
@@ -1052,25 +1260,53 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
                 myHandler?.sendMessage(msg)
 
                 val resultCat = URL("https://users.metropolia.fi/~jaripie/cat").readText()
-                Log.d("res", resultBear)
+                Log.d("res", resultCat)
                 val msg2 = myHandler?.obtainMessage()
                 msg2?.what = 1
                 msg2?.obj = resultCat
                 myHandler?.sendMessage(msg2)
 
                 val resultCow = URL("https://users.metropolia.fi/~jaripie/cow").readText()
-                Log.d("res", resultBear)
+                Log.d("res", resultCow)
                 val msg3 = myHandler?.obtainMessage()
                 msg3?.what = 2
                 msg3?.obj = resultCow
                 myHandler?.sendMessage(msg3)
 
                 val resultDog = URL("https://users.metropolia.fi/~jaripie/dog").readText()
-                Log.d("res", resultBear)
+                Log.d("res", resultDog)
                 val msg4 = myHandler?.obtainMessage()
                 msg4?.what = 3
                 msg4?.obj = resultDog
                 myHandler?.sendMessage(msg4)
+
+                val resultElephant = URL("https://users.metropolia.fi/~jaripie/elephant").readText()
+                Log.d("res", resultElephant)
+                val msg5 = myHandler?.obtainMessage()
+                msg5?.what = 4
+                msg5?.obj = resultElephant
+                myHandler?.sendMessage(msg5)
+
+                val resultFerret = URL("https://users.metropolia.fi/~jaripie/lion").readText()
+                Log.d("res", resultFerret)
+                val msg6 = myHandler?.obtainMessage()
+                msg6?.what = 5
+                msg6?.obj = resultFerret
+                myHandler?.sendMessage(msg6)
+
+                val resultHippopotamus = URL("https://users.metropolia.fi/~jaripie/wolverine").readText()
+                Log.d("res", resultHippopotamus)
+                val msg7 = myHandler?.obtainMessage()
+                msg7?.what = 6
+                msg7?.obj = resultHippopotamus
+                myHandler?.sendMessage(msg7)
+
+                val resultHorse = URL("https://users.metropolia.fi/~jaripie/reindeer").readText()
+                Log.d("res", resultHorse)
+                val msg8 = myHandler?.obtainMessage()
+                msg8?.what = 7
+                msg8?.obj = resultHorse
+                myHandler?.sendMessage(msg8)
 
             } catch (e: Exception) {
                 Log.d("Error", e.toString())

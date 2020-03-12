@@ -94,7 +94,7 @@
     file: 'sampledata/models/horse.fbx',
     name: 'horse',
     recenter: 'root',
-    scale: 9.7656240000000007,
+    scale: 200.00,
   },
   samplers: [
     {
