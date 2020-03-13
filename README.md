@@ -107,3 +107,5 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 # Acknowledgements
 * TX00CK66-3007
+
+* [Tom Paavolainen](https://github.com/Smolmeri) and [Otto Söderlund](https://github.com/ottosoderlund) 
