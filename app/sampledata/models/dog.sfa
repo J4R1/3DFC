@@ -56,7 +56,7 @@
     file: 'sampledata/models/dog.fbx',
     name: 'dog',
     recenter: 'root',
-    scale: 50.0,
+    scale: 70.0,
   },
   samplers: [
     {

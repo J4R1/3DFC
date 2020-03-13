@@ -251,7 +251,25 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
             } else if (selected == 2) {
                 val text = GlobalModel.cat_txt
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-            } else {
+            } else if (selected == 3) {
+                val text = GlobalModel.dog_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 4) {
+                val text = GlobalModel.cow_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 5) {
+                val text = GlobalModel.elephant_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 6) {
+                val text = GlobalModel.ferret_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 7) {
+                val text = GlobalModel.hippopotamus_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            } else if (selected == 8) {
+                val text = GlobalModel.horse_txt
+                tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+            }  else {
                 val text = "Place a animal model"
                 tts!!.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
             }
@@ -651,7 +669,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener, TextToSpeech.OnIn
         val inflater9: LayoutInflater = LayoutInflater.from(applicationContext)
         val view9 = inflater9.inflate(R.layout.name_animal8, root_layout, false)
         val textView9: TextView = view9?.findViewById(R.id.nameAnimal8) as TextView
-        textView9.text = GlobalModel.dog_txt
+        textView9.text = GlobalModel.horse_txt
 
         ViewRenderable.builder()
             .setView(this, view9)

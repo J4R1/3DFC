@@ -56,7 +56,7 @@
     file: 'sampledata/models/cow.fbx',
     name: 'cow',
     recenter: 'root',
-    scale: 100.0,
+    scale: 150.0,
   },
   samplers: [
     {
