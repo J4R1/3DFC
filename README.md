@@ -52,8 +52,7 @@ It also has the ability to recognize your current location, so that multiple mus
 
 ## Requirements
   * Minimum SDK version 26 (Android 8 Oreo)
-  * Internet access  
-    * At this point the animal info only works in Metropolia's networks
+  * Internet access
   * ARCore compatible phone 
   * Access to location services and camera
 
